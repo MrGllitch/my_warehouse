@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import cz.mendelu.pef.R
 import cz.mendelu.pef.navigation.INavigationRouter
 
@@ -18,6 +19,9 @@ import cz.mendelu.pef.navigation.INavigationRouter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(navigationRouter: INavigationRouter) {
+
+    val viewModel = hiltViewModel<TaskListViewModel>()
+
     Scaffold(
         topBar = {
             TopAppBar(title = { 

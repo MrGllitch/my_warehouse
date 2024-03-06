@@ -20,7 +20,9 @@ import cz.mendelu.pef.navigation.Destination
 import cz.mendelu.pef.navigation.NavGraph
 import cz.mendelu.pef.ui.screens.TaskListScreen
 import cz.mendelu.pef.ui.theme.ToDoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

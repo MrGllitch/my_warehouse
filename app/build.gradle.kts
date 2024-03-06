@@ -2,6 +2,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.dagger.hilt.android)
 }
 
 android {
@@ -66,4 +68,19 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
 
     implementation(libs.navigation.compose)
+
+    implementation(libs.room.ktx)
+    implementation(libs.room.viewmodel)
+    implementation(libs.room.lifecycle)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler.kapt)
+
+
+    implementation(libs.hilt)
+    implementation(libs.hilt.compose)
+    kapt(libs.hilt.compiler.kapt)
+
+
+    implementation(libs.moshi)
+    kapt(libs.moshi.kapt)
 }
