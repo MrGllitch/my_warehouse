@@ -1,5 +1,7 @@
 package cz.mendelu.pef.ui.screens
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,15 +14,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(private val repository: ILocalTasksRepository) : ViewModel() {
+
+    val taskListUIState: MutableState<TaskListUIState> =
+        mutableStateOf(TaskListUIState.Loading())
+        /*
     init {
         viewModelScope.launch {
-        repository.insert(Task("Prvni ukol"))
-    }}
+        for (i in 1..50)
+            repository.insert(Task("Prvni ukol")
+        )
+    }}*/
     fun loadTasks(){
         viewModelScope.launch {
         repository.getAll().collect{
-          //TODO dat vedet obrazovce ze jsou nove ukoly
-        }
+          taskListUIState.value = TaskListUIState.Success(it)
+            }
         }
     }
 }

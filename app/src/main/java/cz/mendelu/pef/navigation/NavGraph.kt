@@ -25,7 +25,7 @@ fun NavGraph(
             TaskListScreen(navigationRouter)
         }
         composable(Destination.AddEditTaskScreen.route){
-            AddEditTaskScreen()
+            AddEditTaskScreen(navigationRouter)
         }
         composable(Destination.MapScreen.route){
             MapScreen()
