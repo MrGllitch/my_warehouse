@@ -4,12 +4,22 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import eu.glitch.mywarehouse.database.product.ProductDao
+import eu.glitch.mywarehouse.database.record.RecordDao
+import eu.glitch.mywarehouse.database.type.TypeDao
+import eu.glitch.mywarehouse.database.unit.UnitDao
 import eu.glitch.mywarehouse.model.Product
+import eu.glitch.mywarehouse.model.Type
+import eu.glitch.mywarehouse.model.Record
+import eu.glitch.mywarehouse.model.WarehouseUnit
 
-@Database(entities = [Product::class], version = 1, exportSchema = true)
+@Database(entities = [Product::class, Record::class, WarehouseUnit::class, Type::class], version = 3, exportSchema = true)
 abstract class WarehouseDatabase : RoomDatabase() {
 
-    abstract fun namesDao(): ProductDao
+    abstract fun ProductDao(): ProductDao
+    abstract fun RecordDao(): RecordDao
+    abstract fun TypeDao(): TypeDao
+    abstract fun UnitDao(): UnitDao
 
     companion object {
         private var INSTANCE: WarehouseDatabase? = null
