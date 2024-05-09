@@ -1,36 +1,55 @@
 package eu.glitch.mywarehouse.navigation
 
 import androidx.navigation.NavController
-import eu.glitch.mywarehouse.navigation.Destination
-import eu.glitch.mywarehouse.navigation.INavigationRouter
 
 class NavigationRouterImpl(private val navController: NavController) : INavigationRouter {
-    override fun navigateToAddEditProductScreen() {
-        navController.navigate(Destination.AddEditProductScreen.route)
+    override fun navigateToAddEditProductScreen(id: Long?) {
+        if (id == null) {
+            navController.navigate(Destination.AddEditProductScreen.route)
+        } else {
+            navController.navigate(Destination.AddEditProductScreen.route + "/" + id)
+        }
+
+
     }
 
     override fun navigateToProductListScreen() {
         navController.navigate(Destination.ProductListScreen.route)
     }
 
-    override fun navigateToAddEditRecordScreen() {
-        navController.navigate(Destination.AddEditRecordScreen.route)
+    override fun navigateToAddEditRecordScreen(id: Long?) {
+        if (id == null) {
+            navController.navigate(Destination.AddEditRecordScreen.route)
+        } else {
+            navController.navigate(Destination.AddEditRecordScreen.route + "/" + id)
+        }
+
     }
 
     override fun navigateToRecordListScreen() {
         navController.navigate(Destination.RecordListScreen.route)
     }
 
-    override fun navigateToAddEditTypeScreen() {
-        navController.navigate(Destination.AddEditTypeScreen.route)
+    override fun navigateToAddEditTypeScreen(id: Long?) {
+        if (id == null) {
+            navController.navigate(Destination.AddEditTypeScreen.route)
+        } else {
+            navController.navigate(Destination.AddEditTypeScreen.route + "/" + id)
+        }
+
     }
 
     override fun navigateToTypeListScreen() {
         navController.navigate(Destination.TypeListScreen.route)
     }
 
-    override fun navigateToAddEditUnitScreen() {
-        navController.navigate(Destination.AddEditUnitScreen.route)
+    override fun navigateToAddEditUnitScreen(id: Long?) {
+        if (id == null) {
+            navController.navigate(Destination.AddEditUnitScreen.route)
+        } else {
+            navController.navigate(Destination.AddEditUnitScreen.route + "/" + id)
+        }
+        
     }
 
     override fun navigateToUnitListScreen() {

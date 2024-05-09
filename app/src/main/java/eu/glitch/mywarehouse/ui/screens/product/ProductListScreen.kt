@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,7 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -53,7 +51,7 @@ fun ProductListScreen(navigationRouter: INavigationRouter) {
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter ,content = {
+    NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter, content = {
         Scaffold(topBar = {
             TopAppBar(title = { Text(text = "Product List") },
                 navigationIcon = {
@@ -82,22 +80,22 @@ fun ProductListScreenContent(
     router: INavigationRouter
 ) {
     Column {
-        Button(onClick = { router.navigateToAddEditProductScreen() }) {
+        Button(onClick = { router.navigateToAddEditProductScreen(null) }) {
             Text(text = "a/e product")
         }
         Button(onClick = { router.navigateToRecordListScreen() }) {
             Text(text = "record list")
         }
-        Button(onClick = { router.navigateToAddEditRecordScreen() }) {
+        Button(onClick = { router.navigateToAddEditRecordScreen(null) }) {
             Text(text = "a/e record")
         }
         Button(onClick = { router.navigateToTypeListScreen() }) {
             Text(text = "type list")
         }
-        Button(onClick = { router.navigateToAddEditTypeScreen() }) {
+        Button(onClick = { router.navigateToAddEditTypeScreen(null) }) {
             Text(text = "a/e type")
         }
-        Button(onClick = { router.navigateToAddEditUnitScreen() }) {
+        Button(onClick = { router.navigateToAddEditUnitScreen(null) }) {
             Text(text = "a/e unit")
         }
         Button(onClick = { router.navigateToUnitListScreen() }) {

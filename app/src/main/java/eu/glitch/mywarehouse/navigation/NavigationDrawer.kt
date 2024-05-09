@@ -5,11 +5,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Divider
@@ -40,8 +44,8 @@ fun NavigationDrawer(content: @Composable () -> Unit,
     val items = listOf(
         NavigationItems(
             title = "Zaznamy",
-            selectedIcon = Icons.Filled.Call,
-            unselectedIcon = Icons.Outlined.Call,
+            selectedIcon = Icons.Filled.Delete,
+            unselectedIcon = Icons.Outlined.Delete,
             destination = Destination.RecordListScreen
         ),
         NavigationItems(
