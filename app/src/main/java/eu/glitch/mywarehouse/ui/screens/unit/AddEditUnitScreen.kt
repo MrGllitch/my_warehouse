@@ -79,6 +79,8 @@ fun AddEditProductScreenContent(
                     text = "Jmeno jednotky"
                 )
             },
+
+
             isError = data.nameError != null,
             supportingText = {
                 if (data.nameError != null) {
@@ -102,7 +104,7 @@ fun AddEditProductScreenContent(
             }
         )
         Row {
-            Button(onClick = { actions.addUnit() }) {
+            Button(onClick = { actions.addEditUnit() }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 Text(text = "Pridat")
             }

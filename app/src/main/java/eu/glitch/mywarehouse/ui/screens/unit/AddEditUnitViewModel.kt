@@ -34,7 +34,7 @@ class AddEditUnitViewModel @Inject constructor(
         }
     }
 
-    override fun addUnit() {
+    override fun addEditUnit() {
         if (data.unit.name.isEmpty()) {
             data.nameError = "Name cannot be empty"
             _addEditProductUIState.update {
@@ -51,7 +51,7 @@ class AddEditUnitViewModel @Inject constructor(
             }
             return
         } else {
-            data.nameError = null
+            data.unitError = null
         }
         if (data.unit.id == null) {
             viewModelScope.launch {

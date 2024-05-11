@@ -7,21 +7,22 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 
-
-@Entity(tableName = "products",
+@Entity(
+    tableName = "products",
     foreignKeys = [ForeignKey(
         entity = Type::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("type_id"),
         onDelete = ForeignKey.SET_NULL
     )],
-    indices = [Index(value = ["type_id"])])
+    indices = [Index(value = ["type_id"])]
+)
 data class Product(
     @PrimaryKey(autoGenerate = true)
     var id: Long? = null,
     var name: String,
     @ColumnInfo(name = "type_id")
-    val typeId: Long?,
+    var typeId: Long?,
     //todo photo
     //todo barcode
     var description: String? = null

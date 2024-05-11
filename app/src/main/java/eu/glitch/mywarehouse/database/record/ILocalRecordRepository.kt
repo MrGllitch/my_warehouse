@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface ILocalRecordRepository {
-    fun getRecords(): Flow<Record>
+    fun getRecords(): Flow<List<Record>>
 
-    suspend fun insertRecord(record: Record) : Long
+    suspend fun insertRecord(record: Record): Long
 
 }

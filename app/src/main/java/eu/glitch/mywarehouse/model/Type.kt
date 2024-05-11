@@ -9,6 +9,6 @@ data class Type(
     var id: Long? = null,
 
     var name: String,
-    //todo icon
+    var iconRoute: String,
     var consumable: Boolean = false
 )

@@ -8,7 +8,7 @@ class LocalRecordRepositoryImpl @Inject constructor(private val recordDao: Recor
     ILocalRecordRepository {
 
 
-    override fun getRecords(): Flow<Record> {
+    override fun getRecords(): Flow<List<Record>> {
         return recordDao.getAllRecords()
     }
 

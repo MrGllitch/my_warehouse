@@ -27,7 +27,20 @@ fun NavGraph(
 ) {
     NavHost(navController = navHostController, startDestination = startDestination) {
         composable(Destination.AddEditProductScreen.route) {
-            AddEditProductScreen(navigationRouter)
+            AddEditProductScreen(navigationRouter, null)
+        }
+        composable(Destination.AddEditProductScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )) {
+            val id = it.arguments?.getLong("id")
+            AddEditProductScreen(
+                navigationRouter = navigationRouter,
+                id = id
+            )
         }
 
         composable(Destination.ProductListScreen.route) {
@@ -43,7 +56,20 @@ fun NavGraph(
         }
 
         composable(Destination.AddEditTypeScreen.route) {
-            AddEditTypeScreen(navigationRouter)
+            AddEditTypeScreen(navigationRouter, null)
+        }
+        composable(Destination.AddEditTypeScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )) {
+            val id = it.arguments?.getLong("id")
+            AddEditTypeScreen(
+                navigationRouter = navigationRouter,
+                id = id
+            )
         }
 
         composable(Destination.TypeListScreen.route) {

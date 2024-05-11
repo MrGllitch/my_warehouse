@@ -6,24 +6,28 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import eu.glitch.mywarehouse.model.Product
-import eu.glitch.mywarehouse.model.Record
 import eu.glitch.mywarehouse.model.Type
-import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
 
     @Query("SELECT * FROM products")
-    fun getAllProducts(): Flow<Product>
+    fun getAllProducts(): Flow<List<Product>>
 
     @Insert
-    suspend fun insertProduct(product: Product) : Long
+    suspend fun insertProduct(product: Product): Long
 
     @Delete
     suspend fun deleteProduct(product: Product)
 
     @Update
-    suspend fun updateProduct(product: Product) : Int
+    suspend fun updateProduct(product: Product): Int
+
+    @Query("SELECT * FROM products WHERE id = :id")
+    suspend fun getProduct(id: Long): Product
+
+    @Query("SELECT * FROM types")
+    fun getAllTypes(): Flow<List<Type>>
 
 }

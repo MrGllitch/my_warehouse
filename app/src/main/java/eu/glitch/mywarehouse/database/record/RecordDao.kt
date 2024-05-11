@@ -5,24 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import eu.glitch.mywarehouse.model.Product
 import eu.glitch.mywarehouse.model.Record
-import eu.glitch.mywarehouse.model.Type
-import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecordDao {
     @Query("SELECT * FROM records")
-    fun getAllRecords(): Flow<Record>
+    fun getAllRecords(): Flow<List<Record>>
 
     @Insert
-    suspend fun insertRecord(record: Record) : Long
+    suspend fun insertRecord(record: Record): Long
 
     @Delete
     suspend fun deleteRecord(record: Record)
 
     @Update
-    suspend fun updateRecord(record: Record) : Int
+    suspend fun updateRecord(record: Record): Int
 
 }

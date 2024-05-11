@@ -1,5 +1,9 @@
 package eu.glitch.mywarehouse.ui.screens.type
 
 interface AddEditTypeActions {
-    //fun saveNameWLastName(lastName: String)
+    fun iconChanged(iconRoute: String)
+    fun nameChanged(text: String)
+    fun addEditType()
+    fun deleteType()
+
 }

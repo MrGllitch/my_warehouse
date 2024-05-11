@@ -4,6 +4,6 @@ interface AddEditUnitActions {
     //fun saveNameWLastName(lastName: String)
     fun nameChanged(text: String)
     fun shortCutChanged(text: String)
-    fun addUnit()
+    fun addEditUnit()
     fun loadUnit(id: Long)
 }

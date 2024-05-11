@@ -9,11 +9,15 @@ import eu.glitch.mywarehouse.database.record.RecordDao
 import eu.glitch.mywarehouse.database.type.TypeDao
 import eu.glitch.mywarehouse.database.unit.UnitDao
 import eu.glitch.mywarehouse.model.Product
-import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.Record
+import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 
-@Database(entities = [Product::class, Record::class, WarehouseUnit::class, Type::class], version = 3, exportSchema = true)
+@Database(
+    entities = [Product::class, Record::class, WarehouseUnit::class, Type::class],
+    version = 4,
+    exportSchema = true
+)
 abstract class WarehouseDatabase : RoomDatabase() {
 
     abstract fun ProductDao(): ProductDao
