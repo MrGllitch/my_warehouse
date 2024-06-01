@@ -1,22 +1,22 @@
 package eu.glitch.mywarehouse
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberDrawerState
+import androidx.activity.result.contract.ActivityResultContracts
 import dagger.hilt.android.AndroidEntryPoint
-import eu.glitch.mywarehouse.ui.theme.MyWarehouseTheme
 import eu.glitch.mywarehouse.navigation.Destination
 import eu.glitch.mywarehouse.navigation.NavGraph
-import eu.glitch.mywarehouse.navigation.NavigationDrawer
+import eu.glitch.mywarehouse.ui.theme.MyWarehouseTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            PackageManager.PERMISSION_GRANTED
+        }
+
         super.onCreate(savedInstanceState)
         setContent {
             MyWarehouseTheme {

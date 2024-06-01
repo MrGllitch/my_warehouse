@@ -3,23 +3,24 @@ package eu.glitch.mywarehouse.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 import androidx.room.Index
+import androidx.room.PrimaryKey
 
-@Entity(tableName = "records",
-    foreignKeys =[ForeignKey(
+@Entity(
+    tableName = "records",
+    foreignKeys = [ForeignKey(
         entity = Product::class,
-        parentColumns = arrayOf("id"),
+        parentColumns = ["id"],
         //probably shoud be "productId" if so rework this
-        childColumns = arrayOf("product_id"),
+        childColumns = ["product_id"],
         onDelete = ForeignKey.CASCADE
     ),
-    ForeignKey(
-        entity = WarehouseUnit::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("unit_id"),
-        onDelete = ForeignKey.SET_NULL
-    )
+        ForeignKey(
+            entity = WarehouseUnit::class,
+            parentColumns = ["id"],
+            childColumns = ["unit_id"],
+            onDelete = ForeignKey.SET_NULL
+        )
     ],
     indices = [Index(value = ["product_id", "unit_id"])]
 )
@@ -38,4 +39,4 @@ data class Record(
     var dateFrom: Long,
     @ColumnInfo(name = "date_to")
     var dateTo: Long
-){}
+) {}

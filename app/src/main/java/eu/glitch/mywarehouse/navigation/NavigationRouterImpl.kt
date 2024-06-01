@@ -17,6 +17,16 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         navController.navigate(Destination.ProductListScreen.route)
     }
 
+    override fun navigateToBarcodeScannerScreen() {
+        navController.navigate(Destination.BarcodeScannerScreen.route)
+    }
+
+    override fun navigateFromBarcodeScannerScreen(result: String) {
+        navController.currentBackStackEntry?.savedStateHandle?.set("result", result)
+        returnBack()
+    }
+
+
     override fun navigateToAddEditRecordScreen(id: Long?) {
         if (id == null) {
             navController.navigate(Destination.AddEditRecordScreen.route)
@@ -49,7 +59,7 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         } else {
             navController.navigate(Destination.AddEditUnitScreen.route + "/" + id)
         }
-        
+
     }
 
     override fun navigateToUnitListScreen() {

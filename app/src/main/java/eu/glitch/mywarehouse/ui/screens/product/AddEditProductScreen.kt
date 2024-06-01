@@ -1,11 +1,14 @@
 package eu.glitch.mywarehouse.ui.screens.product
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -23,22 +26,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.ui.elements.AddEditRow
+import eu.glitch.mywarehouse.ui.elements.CameraView
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductScreen(navigationRouter: INavigationRouter, id: Long?) {
-
     val viewModel = hiltViewModel<AddEditProductViewModel>()
+
+
+    viewModel.barcodeChanged(
+        navigationRouter.getNavController().currentBackStackEntry?.savedStateHandle?.get<String>(
+            "result"
+        ) ?: ""
+    )
 
     var data by remember {
         mutableStateOf(AddEditProductData())
     }
+    Log.d("barcode:", "b${data.barcode}")
+
 
     val state = viewModel.addEditProductUIState.collectAsStateWithLifecycle()
 
@@ -87,6 +102,7 @@ fun AddEditProductScreenContent(
     var isItemTypeOpen by remember { mutableStateOf(false) }
     var selectedItem =
         data.types.find { type -> type.id == data.product.typeId } ?: Type(null, "", "")
+    val context = LocalContext.current
 
     Column(modifier = Modifier.padding(paddingValues)) {
         OutlinedTextField(value = data.product.name,
@@ -151,6 +167,33 @@ fun AddEditProductScreenContent(
         }
 
 
+        var isCameraVisible by remember {
+            mutableStateOf(false)
+        }
+
+        Button(onClick = { isCameraVisible = true }) {
+            if (data.imageName == "") {
+                Text(text = "Take photo")
+            } else {
+                Text(text = "Retake photo")
+            }
+        }
+        if (isCameraVisible) {
+            CameraView(
+                takePhoto = { actions.takePhoto(it) },
+                onDismissRequest = { isCameraVisible = false })
+        } else if (data.imageName != "") {
+            Image(
+                painter = rememberAsyncImagePainter(File("${context.filesDir}/${data.imageName}")),
+                contentDescription = ""
+            )
+        }
+
+        Button(onClick = { navigationRouter.navigateToBarcodeScannerScreen() }) {
+            Text(text = "barcode ${data.barcode}")
+        }
+
+
         Spacer(modifier = Modifier.weight(1.0f))
         AddEditRow(
             name = data.product.name,
@@ -162,4 +205,13 @@ fun AddEditProductScreenContent(
     }
 }
 
-
+/*
+fun Context.createImageFile(): File? {
+    val timeStamp = SimpleDateFormat("ddMMyyyy_HHmmss").format(Date())
+    val imageFileName = "JPEG_" + timeStamp + "_"
+    return try {
+        File.createTempFile(imageFileName, ".jpg", externalCacheDir)
+    }catch (e:Exception){
+        null
+    }
+}*/

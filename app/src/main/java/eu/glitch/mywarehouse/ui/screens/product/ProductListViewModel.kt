@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
-import eu.glitch.mywarehouse.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,7 +24,6 @@ class ProductListViewModel @Inject constructor(
 
     fun loadProducts() {
         viewModelScope.launch {
-            productRepository.insertProduct(Product(null, "test", 1, "popis"))
             productRepository.getProducts().collect {
                 data.products = it.toMutableList()
                 _productListUIState.update {

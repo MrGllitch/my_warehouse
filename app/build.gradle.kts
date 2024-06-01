@@ -62,6 +62,18 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.camera.view)
+    implementation(libs.androidx.camera.mlkit.vision)
+    implementation(libs.androidx.camera.extensions)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.core)
+    implementation(libs.camposer)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -83,7 +95,6 @@ dependencies {
     implementation(libs.hilt)
     implementation(libs.hilt.compose)
     kapt(libs.hilt.compiler.kapt)
-
     implementation(libs.lifecycle)
 
 

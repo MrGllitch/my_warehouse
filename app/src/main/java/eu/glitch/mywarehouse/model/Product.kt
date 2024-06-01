@@ -11,8 +11,8 @@ import androidx.room.PrimaryKey
     tableName = "products",
     foreignKeys = [ForeignKey(
         entity = Type::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("type_id"),
+        parentColumns = ["id"],
+        childColumns = ["type_id"],
         onDelete = ForeignKey.SET_NULL
     )],
     indices = [Index(value = ["type_id"])]
@@ -22,9 +22,9 @@ data class Product(
     var id: Long? = null,
     var name: String,
     @ColumnInfo(name = "type_id")
-    var typeId: Long?,
-    //todo photo
-    //todo barcode
+    var typeId: Long,
+    var imageName: String?,
+    var barcode: String?,
     var description: String? = null
 
 )

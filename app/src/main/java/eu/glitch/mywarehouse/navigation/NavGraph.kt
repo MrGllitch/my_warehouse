@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import eu.glitch.mywarehouse.ui.screens.BarcodeScannerScreen
 import eu.glitch.mywarehouse.ui.screens.product.AddEditProductScreen
 import eu.glitch.mywarehouse.ui.screens.product.ProductListScreen
 import eu.glitch.mywarehouse.ui.screens.record.AddEditRecordScreen
@@ -97,6 +98,10 @@ fun NavGraph(
         composable(Destination.UnitListScreen.route) {
             UnitListScreen(navigationRouter)
         }
+        composable(Destination.BarcodeScannerScreen.route) {
+            BarcodeScannerScreen(navigationRouter = navigationRouter)
+        }
+
     }
 
 }

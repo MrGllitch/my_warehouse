@@ -14,8 +14,8 @@ import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 
 @Database(
-    entities = [Product::class, Record::class, WarehouseUnit::class, Type::class],
-    version = 4,
+    entities = [Type::class, WarehouseUnit::class, Product::class, Record::class],
+    version = 6,
     exportSchema = true
 )
 abstract class WarehouseDatabase : RoomDatabase() {

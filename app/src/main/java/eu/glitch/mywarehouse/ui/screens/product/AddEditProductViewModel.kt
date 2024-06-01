@@ -1,19 +1,29 @@
 package eu.glitch.mywarehouse.ui.screens.product
 
+import android.content.Context
+import android.net.Uri
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditProductViewModel @Inject constructor(
-    private val productRepository: ILocalProductRepository
+    private val productRepository: ILocalProductRepository, @ApplicationContext val context: Context
 ) : ViewModel(), AddEditProductActions {
+
 
     var data: AddEditProductData = AddEditProductData()
 
@@ -36,6 +46,16 @@ class AddEditProductViewModel @Inject constructor(
 
     override fun typeChanged(id: Long) {
         data.product.typeId = id
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
+    }
+
+    override fun photoChanged(uri: Uri) {
+    }
+
+    override fun barcodeChanged(barcode: String) {
+        data.barcode = barcode
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }
@@ -103,6 +123,41 @@ class AddEditProductViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    override fun takePhoto(
+        imageCapture: ImageCapture,
+    ) {
+
+        var imageName = SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS",
+            Locale.GERMANY
+        ).format(System.currentTimeMillis()) + ".jpg"
+
+        val photoFile = File(
+            context.filesDir,
+            imageName
+        )
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            Executors.newSingleThreadExecutor(),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exception: ImageCaptureException) {
+                    onError(exception)
+                }
+
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    val savedUri = Uri.fromFile(photoFile)
+                    data.imageName = imageName
+                    _addEditProductUIState.update {
+                        AddEditProductUIState.ProductStateChanged(data)
+                    }
+                }
+            })
     }
 
 }

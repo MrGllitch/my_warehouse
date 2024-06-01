@@ -6,6 +6,10 @@ interface INavigationRouter {
     fun navigateToAddEditProductScreen(id: Long?)
     fun navigateToProductListScreen()
 
+    fun navigateToBarcodeScannerScreen()
+    fun navigateFromBarcodeScannerScreen(result: String)
+
+
     fun navigateToAddEditRecordScreen(id: Long?)
     fun navigateToRecordListScreen()
 
