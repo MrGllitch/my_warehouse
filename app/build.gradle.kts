@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.zxing.android.embedded)
     implementation(libs.core)
     implementation(libs.camposer)
+    implementation(libs.moshi)
+    kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

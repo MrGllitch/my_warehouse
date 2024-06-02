@@ -13,7 +13,6 @@ navigation-compose = "2.7.7"
 room = "2.6.1"
 hilt = "2.48"
 hilt-compose = "1.2.0"
-moshi = "1.15.0"
 kotlin-kapt = "2.8.10"
 
 lifecycle = "2.6.2"
@@ -35,6 +34,7 @@ accompanistPermissions = "0.35.1-alpha"
 zxingAndroidEmbedded = "4.3.0"
 zxing = "3.4.0"
 camposer = "0.4.0"
+moshiVersion = "1.15.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -79,6 +79,8 @@ androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", 
 zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 camposer = { group = "io.github.ujizin", name = "camposer", version.ref = "camposer" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshiVersion" }
+moshi-kapt = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshiVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

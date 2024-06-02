@@ -71,7 +71,7 @@ class AddEditProductViewModel @Inject constructor(
         } else {
             data.nameError = null
         }
-        if (data.product.typeId == null) {
+        if (data.product.typeId == null || data.product.typeId <= 0) {
             data.typeError = "You have to select type"
             _addEditProductUIState.update {
                 AddEditProductUIState.ProductStateChanged(data)
@@ -129,6 +129,9 @@ class AddEditProductViewModel @Inject constructor(
     override fun takePhoto(
         imageCapture: ImageCapture,
     ) {
+        if (data.imageName != "") {
+            removePhoto()
+        }
 
         var imageName = SimpleDateFormat(
             "yyyy-MM-dd-HH-mm-ss-SSS",
@@ -158,6 +161,15 @@ class AddEditProductViewModel @Inject constructor(
                     }
                 }
             })
+    }
+
+    override fun removePhoto() {
+        context.deleteFile(data.imageName)
+        data.imageName = ""
+
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
     }
 
 }

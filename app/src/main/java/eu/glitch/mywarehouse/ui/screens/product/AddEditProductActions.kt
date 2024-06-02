@@ -10,6 +10,7 @@ interface AddEditProductActions {
     fun photoChanged(uri: Uri)
     fun barcodeChanged(barcode: String)
     fun takePhoto(imageCapture: ImageCapture)
+    fun removePhoto()
 
     fun addEditProduct()
     fun deleteProduct()

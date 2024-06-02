@@ -3,9 +3,8 @@ package eu.glitch.mywarehouse.ui.screens
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.CompoundBarcodeView
 import eu.glitch.mywarehouse.navigation.INavigationRouter
@@ -24,6 +24,7 @@ fun BarcodeScannerScreen(navigationRouter: INavigationRouter) {
     var scanFlag by remember {
         mutableStateOf(false)
     }
+
 
     val compoundBarcodeView = remember {
         CompoundBarcodeView(context).apply {
@@ -37,7 +38,7 @@ fun BarcodeScannerScreen(navigationRouter: INavigationRouter) {
                 }
                 scanFlag = true
                 result.text?.let {
-                    navigationRouter.navigateFromBarcodeScannerScreen(it)
+                    scanResult = it
                     scanFlag = false
                 }
             }
@@ -48,20 +49,22 @@ fun BarcodeScannerScreen(navigationRouter: INavigationRouter) {
             if (it.isAttachedToWindow) {
                 it.resume()
             } else {
-
                 it.pause()
             }
         }
     }
+    if (scanResult != "") {
+        compoundBarcodeView.pause()
+        LaunchedEffect(scanResult) {
+            navigationRouter.navigateFromBarcodeScannerScreen(scanResult)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { navigationRouter.navigateFromBarcodeScannerScreen("555") }) {
-            Text(text = "haha")
-        }
-        /*AndroidView(
+        AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { compoundBarcodeView },
-        )*/
+        )
     }
 }
 

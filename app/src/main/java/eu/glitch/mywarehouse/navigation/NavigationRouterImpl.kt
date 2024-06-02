@@ -1,6 +1,9 @@
 package eu.glitch.mywarehouse.navigation
 
 import androidx.navigation.NavController
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import eu.glitch.mywarehouse.model.Barcode
 
 class NavigationRouterImpl(private val navController: NavController) : INavigationRouter {
     override fun navigateToAddEditProductScreen(id: Long?) {
@@ -22,7 +25,12 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
     }
 
     override fun navigateFromBarcodeScannerScreen(result: String) {
-        navController.currentBackStackEntry?.savedStateHandle?.set("result", result)
+        val moshi: Moshi = Moshi.Builder().build()
+        val jsonAdapter: JsonAdapter<Barcode> = moshi.adapter(Barcode::class.java)
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            "barcode",
+            jsonAdapter.toJson(Barcode(result))
+        )
         returnBack()
     }
 
