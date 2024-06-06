@@ -1,7 +1,11 @@
 package eu.glitch.mywarehouse.ui.screens.product
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -23,11 +27,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
+import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,10 +105,35 @@ fun ProductListScreenContent(
     actions: ProductListActions,
     router: INavigationRouter
 ) {
+    val context = LocalContext.current
     LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.padding(paddingValues)) {
         data.products.forEach {
             item {
-                Text(text = it.name)
+                Column {
+                    if (it.imageName == "") {
+                        Image(
+                            painter = painterResource(id = R.drawable.image_placeholder),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(100.dp, 100.dp)
+                                .clip(RectangleShape)
+                        )
+                    } else {
+                        Image(
+                            painter = rememberAsyncImagePainter(File("${context.filesDir}/${it.imageName}")),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp, 100.dp)
+                                .clip(RectangleShape)
+
+                        )
+                    }
+                    Row {
+                        //todo icon?
+                        Text(text = it.name)
+                    }
+                }
             }
         }
     }

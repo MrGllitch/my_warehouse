@@ -37,12 +37,6 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
 
-    override fun descriptionChanged(text: String) {
-        data.product.description = text
-        _addEditProductUIState.update {
-            AddEditProductUIState.ProductStateChanged(data)
-        }
-    }
 
     override fun typeChanged(id: Long) {
         data.product.typeId = id
@@ -80,6 +74,7 @@ class AddEditProductViewModel @Inject constructor(
         } else {
             data.typeError = null
         }
+        data.product.imageName = data.imageName
         if (data.product.id == null) {
             viewModelScope.launch {
                 productRepository.insertProduct(data.product)
@@ -109,6 +104,7 @@ class AddEditProductViewModel @Inject constructor(
         viewModelScope.launch {
             data.product = productRepository.getProduct(id)
         }
+        data.imageName = data.product.imageName.toString()
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }

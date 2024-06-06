@@ -2,9 +2,11 @@ package eu.glitch.mywarehouse.ui.screens.record
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -36,7 +38,7 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     val state = viewModel.productListUIState.collectAsStateWithLifecycle()
 
     state.value.let {
-        when(it){
+        when (it) {
             RecordListUIState.Loading -> {
 
             }
@@ -48,18 +50,30 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter ,content = {
-    Scaffold(topBar = { TopAppBar(title = { Text(text = "Record List") },
-        navigationIcon = {
-            val coroutineScope = rememberCoroutineScope()
-            IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
-            }
-        })},) {
-        ProductListScreenContent(paddingValues = it,data = data, actions =  viewModel)
-    }
-})
+    NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter, content = {
+        Scaffold(topBar = {
+            TopAppBar(title = { Text(text = "Record List") },
+                navigationIcon = {
+                    val coroutineScope = rememberCoroutineScope()
+                    IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                    }
+                })
+        },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    navigationRouter.navigateToAddEditRecordScreen(
+                        null
+                    )
+                }) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                }
+            }) {
+            ProductListScreenContent(paddingValues = it, data = data, actions = viewModel)
+        }
+    })
 }
+
 @Composable
 fun ProductListScreenContent(
     paddingValues: PaddingValues,

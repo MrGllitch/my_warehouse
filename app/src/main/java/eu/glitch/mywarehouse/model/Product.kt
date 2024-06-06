@@ -25,6 +25,5 @@ data class Product(
     var typeId: Long,
     var imageName: String?,
     var barcode: String?,
-    var description: String? = null
 
-)
+    )
