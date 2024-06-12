@@ -7,7 +7,7 @@ interface AddEditRecordActions {
     fun dateFromChanged(dateFrom: String)
     fun dateToChanged(dateTo: String)
 
-    fun addEditProduct()
-    fun deleteProduct()
+    fun addEditRecord()
+    fun deleteRecord()
 
 }

@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.core)
     implementation(libs.camposer)
     implementation(libs.moshi)
+    implementation(libs.androidx.compose.material)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

@@ -49,7 +49,21 @@ fun NavGraph(
         }
 
         composable(Destination.AddEditRecordScreen.route) {
-            AddEditRecordScreen(navigationRouter)
+            AddEditRecordScreen(navigationRouter, id = null)
+        }
+
+        composable(Destination.AddEditRecordScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )) {
+            val id = it.arguments?.getLong("id")
+            AddEditRecordScreen(
+                navigationRouter = navigationRouter,
+                id = id
+            )
         }
 
         composable(Destination.RecordListScreen.route) {

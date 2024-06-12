@@ -36,7 +36,8 @@ class AddEditRecordViewModel @Inject constructor(
     }
 
     override fun quantityChanged(quantity: String) {
-        data.record.quantity = quantity
+        val newQuantity = quantity.toIntOrNull() ?: 0
+        data.record.quantity = newQuantity.coerceAtLeast(0).toString()
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
@@ -60,13 +61,14 @@ class AddEditRecordViewModel @Inject constructor(
         return try {
             val longValue = str.toLong()
             longValue > 0
+            true
         } catch (e: NumberFormatException) {
             false
         }
     }
 
-    override fun addEditProduct() {
-        if (isPositiveLong(data.record.productId)) {
+    override fun addEditRecord() {
+        if (!isPositiveLong(data.record.productId)) {
             data.productError = "You have to select product"
             _addEditRecordUIState.update {
                 AddEditRecordUIState.RecordDataChanged(data)
@@ -75,7 +77,7 @@ class AddEditRecordViewModel @Inject constructor(
         } else {
             data.productError = null
         }
-        if (isPositiveLong(data.record.unitId)) {
+        if (!isPositiveLong(data.record.unitId)) {
             data.unitError = "You have to select unit"
             _addEditRecordUIState.update {
                 AddEditRecordUIState.RecordDataChanged(data)
@@ -84,7 +86,15 @@ class AddEditRecordViewModel @Inject constructor(
         } else {
             data.unitError = null
         }
-        //todo other checkings
+        if (data.record.quantity == "0") {
+            data.quantityError = "Number must be greater than 0"
+            _addEditRecordUIState.update {
+                AddEditRecordUIState.RecordDataChanged(data)
+            }
+            return
+        } else {
+            data.quantityError = null
+        }
 
         //if creating new item set current time if edditing use that last
         val currentMillis = if (data.record.dateFrom != null) {
@@ -99,6 +109,7 @@ class AddEditRecordViewModel @Inject constructor(
             productId = data.record.productId.toLong(),
             unitId = data.record.unitId.toLong(),
             quantity = data.record.quantity.toInt(),
+            startQuantity = data.record.quantity.toInt(),
             dateFrom = currentMillis,
             dateTo = data.record.dateTo.toLong()
         )
@@ -111,11 +122,13 @@ class AddEditRecordViewModel @Inject constructor(
                 recordRepository.updateRecord(newRecord)
             }
         }
-        //todo update
+        _addEditRecordUIState.update {
+            AddEditRecordUIState.Success
+        }
     }
 
 
-    override fun deleteProduct() {
+    override fun deleteRecord() {
         //TODO("Not yet implemented")
     }
 

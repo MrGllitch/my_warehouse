@@ -32,6 +32,7 @@ data class Record(
     @ColumnInfo(name = "unit_id")
     var unitId: Long? = 0,
 
+    var startQuantity: Int = 0,
     var quantity: Int = 0,
 
     //Millisecond from 1.1.1970
