@@ -77,4 +77,10 @@ class AddEditUnitViewModel @Inject constructor(
         }
     }
 
+    override fun deleteUnit() {
+        viewModelScope.launch {
+            unitRepository.deleteUnit(data.unit)
+        }
+    }
+
 }

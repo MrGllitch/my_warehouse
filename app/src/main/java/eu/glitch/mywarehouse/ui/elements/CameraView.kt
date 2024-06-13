@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Lens
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -24,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import eu.glitch.mywarehouse.R
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -83,13 +84,13 @@ fun CameraView(
                     },
                     content = {
                         Icon(
-                            imageVector = Icons.Sharp.Lens,
+                            imageVector = ImageVector.vectorResource(R.drawable.icon_photo_camera),
                             contentDescription = "Take picture",
                             tint = Color.White,
                             modifier = Modifier
-                                .size(100.dp)
-                                .padding(1.dp)
+                                .size(120.dp)
                                 .border(1.dp, Color.White, CircleShape)
+                                .padding(5.dp)
                         )
                     }
                 )

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
+import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
-    private val productRepository: ILocalProductRepository
+    private val productRepository: ILocalProductRepository,
+    private val typeRepository: ILocalTypeRepository
 ) : ViewModel(), ProductListActions {
 
     var data: ProductListData = ProductListData()
@@ -26,6 +28,18 @@ class ProductListViewModel @Inject constructor(
         viewModelScope.launch {
             productRepository.getProducts().collect {
                 data.products = it.toMutableList()
+                _productListUIState.update {
+                    ProductListUIState.ProductListChanged(data)
+                }
+            }
+
+        }
+    }
+
+    fun loadTypes() {
+        viewModelScope.launch {
+            typeRepository.getTypes().collect {
+                data.types = it.toMutableList()
                 _productListUIState.update {
                     ProductListUIState.ProductListChanged(data)
                 }

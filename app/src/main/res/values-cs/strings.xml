@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MujSklad</string>
+    <string name="records">Zaznamy</string>
+    <string name="Products">Produkty</string>
+    <string name="types">Typy</string>
+    <string name="units">Jednotky</string>
+    <string name="version">Verze 1.0.0</string>
+    <string name="remove">Smazat</string>
+    <string name="add">Přidat</string>
+    <string name="submit">Potvrdit</string>
+    <string name="are_u_sure">Jste si jisti že chcete odebrat</string>
+    <string name="yes">Ano</string>
+    <string name="cancel">Zrušit</string>
+    <string name="will_be_deleted">bude na vždy odstraněn.</string>
+    <string name="search">Vyhledat</string>
+    <string name="add_product">Přidat Produkt</string>
+    <string name="edit_product">Upravit Produkt</string>
+    <string name="product_name">Jméno Produktu</string>
+    <string name="take_photo">Vyfotit</string>
+    <string name="retake_photo">Vyfotit znovu</string>
+    <string name="add_record">Přidat Záznam</string>
+    <string name="edit_record">Upravit Záznam</string>
+    <string name="add_type">Přidat Typ</string>
+    <string name="edit_type">Upravit Typ</string>
+    <string name="add_unit">Přidat Jednotku</string>
+    <string name="edit_unit">Upravit Jednotku</string>
+    <string name="scan_code">Načíst kód</string>
+    <string name="rescan_code">Načíst znovu</string>
+    <string name="product_list">Seznam Produktů</string>
+    <string name="select_product">Vzbrat Produkt</string>
+    <string name="quantity">Množství</string>
+    <string name="unit">Jednotka</string>
+    <string name="select_a_date">Vybrat datum</string>
+    <string name="select">Vybrat</string>
+    <string name="record">Záznam</string>
+    <string name="record_list">Seznam Záznamů</string>
+    <string name="best_before">Spotřebovat do</string>
+    <string name="type_name">Jméno Typu</string>
+    <string name="icon">"Ikona: "</string>
+    <string name="type_list">Seznam Typů</string>
+    <string name="unit_name">Jméno Jednotky</string>
+    <string name="unit_shortcut">Zkratka Jednotky</string>
+    <string name="unit_list">Seznam Jednotek</string>
+</resources>

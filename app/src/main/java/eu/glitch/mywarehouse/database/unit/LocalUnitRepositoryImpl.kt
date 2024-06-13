@@ -22,5 +22,9 @@ class LocalUnitRepositoryImpl @Inject constructor(private val unitDao: UnitDao) 
         unitDao.updateUnit(unit = unit)
     }
 
+    override suspend fun deleteUnit(unit: WarehouseUnit) {
+        unitDao.deleteUnit(unit)
+    }
+
 
 }

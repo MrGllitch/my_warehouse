@@ -1,7 +1,6 @@
 package eu.glitch.mywarehouse.database.product
 
 import eu.glitch.mywarehouse.model.Product
-import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.Flow
 
 
@@ -16,5 +15,4 @@ interface ILocalProductRepository {
 
     suspend fun getProduct(id: Long): Product
 
-    fun getTypes(): Flow<List<Type>>
 }

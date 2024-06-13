@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -101,7 +104,23 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: Long?) {
     }
 
 
-    Scaffold(topBar = { TopAppBar(title = { Text(text = "Add/Edit Product") }) }) {
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                text = if (id == null) {
+                    stringResource(R.string.add_product)
+                } else {
+                    stringResource(R.string.edit_product)
+                }
+            )
+        }, navigationIcon = {
+            IconButton(
+                onClick = { navigationRouter.returnBack() }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+            }
+        })
+    }
+    ) {
         AddEditProductScreenContent(
             paddingValues = it,
             data = data,
@@ -122,12 +141,17 @@ fun AddEditProductScreenContent(
     ) {
     val context = LocalContext.current
 
-    Column(modifier = Modifier.padding(paddingValues)) {
-        OutlinedTextField(value = data.product.name,
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(modifier = Modifier.fillMaxWidth(), value = data.product.name,
             onValueChange = { actions.nameChanged(it) },
             label = {
                 Text(
-                    text = "Jmeno produktu"
+                    text = stringResource(R.string.product_name)
                 )
             },
             isError = data.nameError != null,
@@ -171,12 +195,13 @@ fun AddEditProductScreenContent(
                     }
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
             Column {
                 Button(onClick = { isCameraVisible = true }) {
                     if (data.imageName == "") {
-                        Text(text = "Take photo")
+                        Text(text = stringResource(R.string.take_photo))
                     } else {
-                        Text(text = "Retake photo")
+                        Text(text = stringResource(R.string.retake_photo))
                     }
                 }
                 if (isCameraVisible) {
@@ -186,7 +211,7 @@ fun AddEditProductScreenContent(
                 }
                 BarcodeSelector(data = data, navigationRouter = navigationRouter, actions = actions)
             }
-
+            Spacer(modifier = Modifier.weight(1f))
         }
 
 
@@ -197,9 +222,9 @@ fun AddEditProductScreenContent(
             name = data.product.name,
             id = data.product.id,
             onAddEdit = { actions.addEditProduct() },
-            onCancel = { navigationRouter.returnBack() }) {
-
-        }
+            onDelete = {//todo
+            }
+        )
     }
 }
 
@@ -213,9 +238,9 @@ fun BarcodeSelector(
         Row(modifier = Modifier.clickable { navigationRouter.navigateToBarcodeScannerScreen() }) {
             GetIconByName(name = "icon_barcode", contentDescription = "")
             if (data.barcode == "") {
-                Text(text = "Scan code")
+                Text(text = stringResource(R.string.scan_code))
             } else {
-                Text(text = "Rescan code")
+                Text(text = stringResource(R.string.rescan_code))
                 IconButton(onClick = { actions.barcodeChanged("") }) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "")
                 }
@@ -236,10 +261,12 @@ fun TypeSelector(
     var selectedItem =
         data.types.find { type -> type.id == data.product.typeId } ?: Type(null, "", "")
     ExposedDropdownMenuBox(
+        modifier = Modifier.fillMaxWidth(),
         expanded = isItemTypeOpen,
         onExpandedChange = { isItemTypeOpen = !isItemTypeOpen }) {
 
         TextField(
+
             value = selectedItem.name,
             leadingIcon = {
                 if (selectedItem.iconRoute != "") {
@@ -255,7 +282,9 @@ fun TypeSelector(
             readOnly = true,
             singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isItemTypeOpen) },
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
             isError = data.typeError != null,
             supportingText = {
                 if (data.typeError != null) {

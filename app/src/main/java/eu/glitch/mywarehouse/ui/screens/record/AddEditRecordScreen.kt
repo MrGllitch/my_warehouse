@@ -1,14 +1,21 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -17,6 +24,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -29,12 +38,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.ui.elements.AddEditRow
 import eu.glitch.mywarehouse.utils.DateUtils
@@ -59,6 +73,7 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
                 }
                 viewModel.loadUnits()
                 viewModel.loadProducts()
+                viewModel.loadTypes()
             }
 
             is AddEditRecordUIState.RecordDataChanged -> {
@@ -74,7 +89,22 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
     }
 
 
-    Scaffold(topBar = { TopAppBar(title = { Text(text = "Add/Edit Record") }) }) {
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                text = if (id == null) {
+                    stringResource(R.string.add_record)
+                } else {
+                    stringResource(R.string.edit_record)
+                }
+            )
+        }, navigationIcon = {
+            IconButton(
+                onClick = { navigationRouter.returnBack() }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+            }
+        })
+    }) {
         AddEditProductScreenContent(
             paddingValues = it,
             data = data,
@@ -92,7 +122,11 @@ fun AddEditProductScreenContent(
     actions: AddEditRecordActions,
     navigationRouter: INavigationRouter
 ) {
-    Column(modifier = Modifier.padding(paddingValues)) {
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(16.dp)
+    ) {
         var isProductExpanded by remember {
             mutableStateOf(false)
         }
@@ -107,12 +141,32 @@ fun AddEditProductScreenContent(
         }
 
         Column {
-            Text(
-                modifier = Modifier
-                    .clickable { isProductExpanded = !isProductExpanded }
-                    .padding(16.dp),
-                text = selectedProduct?.name ?: "Select Product"
-            )
+            Row(modifier = Modifier.clickable { isProductExpanded = !isProductExpanded }) {
+
+                Text(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    text = selectedProduct?.name ?: stringResource(R.string.select_product),
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if (isProductExpanded) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "",
+                        modifier = Modifier.size(32.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+
+            }
+
             DropdownMenu(
                 expanded = isProductExpanded,
                 onDismissRequest = { isProductExpanded = false }) {
@@ -133,13 +187,17 @@ fun AddEditProductScreenContent(
             Text(text = data.productError!!, color = Color.Red)
         }
 
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             OutlinedTextField(
+                modifier = Modifier
+                    .width(180.dp),
                 value = data.record.quantity,
                 onValueChange = { actions.quantityChanged(it) },
                 label = {
                     Text(
-                        text = "Mnozstvi"
+                        text = stringResource(R.string.quantity)
                     )
                 },
                 isError = data.quantityError != null,
@@ -151,36 +209,45 @@ fun AddEditProductScreenContent(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Column {
-                Row(modifier = Modifier.clickable { isUnitExpanded = !isUnitExpanded }) {
-                    Text(text = selectedUnit?.name ?: "Jednotka")
+                Row(modifier = Modifier
+                    .clickable { isUnitExpanded = !isUnitExpanded }
+                    .padding(16.dp)
+                    .fillMaxWidth()) {
+                    Text(
+                        text = selectedUnit?.name ?: stringResource(R.string.unit),
+                        fontSize = 22.sp
+                    )
                     Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "")
                 }
                 if (data.unitError != null) {
                     Text(text = data.unitError!!, color = Color.Red)
                 }
 
-            }
-            DropdownMenu(
-                expanded = isUnitExpanded,
-                onDismissRequest = { isUnitExpanded = false }) {
-                data.units.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it.name) },
-                        onClick = {
-                            actions.unitChanged(it.id.toString())
-                            isUnitExpanded = false
-                        })
+                DropdownMenu(
+                    expanded = isUnitExpanded,
+                    onDismissRequest = { isUnitExpanded = false }) {
+                    data.units.forEach {
+                        DropdownMenuItem(
+                            text = { Text(it.name) },
+                            onClick = {
+                                actions.unitChanged(it.id.toString())
+                                isUnitExpanded = false
+                            })
+
+                    }
 
                 }
-
             }
+
         }
         Slider(
+            modifier = Modifier.padding(horizontal = 30.dp),
             value = data.record.quantity.toFloat(),
             onValueChange = { actions.quantityChanged(it.toInt().toString()) },
             valueRange = 0f..100f,
             steps = 99
         )
+        Spacer(modifier = Modifier.height(32.dp))
 
         val state =
             rememberDatePickerState(initialSelectedDateMillis = data.record.dateTo.toLongOrNull())
@@ -188,16 +255,33 @@ fun AddEditProductScreenContent(
             mutableStateOf(false)
         }
 
-        Row(modifier = Modifier.clickable { isDatePickerVisible = !isDatePickerVisible }) {
+        Row(modifier = Modifier
+
+            .clickable { isDatePickerVisible = !isDatePickerVisible }
+            .border( // Outline
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+
+
+        ) {
+            Column {
+                if (data.record.dateTo != "") {
+                    Text(
+                        text = DateUtils.getDateString(data.record.dateTo.toLong()),
+                        fontSize = 18.sp
+                    )
+                } else {
+                    Text(text = stringResource(R.string.select_a_date), fontSize = 18.sp)
+                }
+                if (data.dateError != null) {
+                    Text(text = data.dateError!!, color = Color.Red)
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
             Icon(imageVector = Icons.Default.DateRange, contentDescription = "")
-            if (data.record.dateTo != "") {
-                Text(text = DateUtils.getDateString(data.record.dateTo.toLong()))
-            } else {
-                Text(text = "Select a date")
-            }
-            if (data.dateError != null) {
-                Text(text = data.dateError!!, color = Color.Red)
-            }
         }
 
         if (isDatePickerVisible)
@@ -212,12 +296,12 @@ fun AddEditProductScreenContent(
                             isDatePickerVisible = false
                         }
                     }) {
-                        Text(text = "Select")
+                        Text(text = stringResource(R.string.select))
                     }
                 },
                 dismissButton = {
                     Button(onClick = { isDatePickerVisible = false }) {
-                        Text(text = "Cancel")
+                        Text(text = stringResource(R.string.cancel))
                     }
                 }
 
@@ -229,10 +313,9 @@ fun AddEditProductScreenContent(
 
         Spacer(modifier = Modifier.weight(1.0f))
         AddEditRow(
-            name = "Record",
+            name = stringResource(R.string.record),
             id = data.record.id,
             onAddEdit = { actions.addEditRecord() },
-            onCancel = { navigationRouter.returnBack() },
             onDelete = { actions.deleteRecord() })
     }
 

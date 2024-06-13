@@ -1,7 +1,6 @@
 package eu.glitch.mywarehouse.database.product
 
 import eu.glitch.mywarehouse.model.Product
-import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -27,8 +26,5 @@ class LocalProductRepositoryImpl @Inject constructor(private val productDao: Pro
         return productDao.getProduct(id)
     }
 
-    override fun getTypes(): Flow<List<Type>> {
-        return productDao.getAllTypes()
-    }
 
 }

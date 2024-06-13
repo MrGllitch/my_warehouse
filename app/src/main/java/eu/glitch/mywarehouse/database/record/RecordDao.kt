@@ -5,9 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import eu.glitch.mywarehouse.model.Product
 import eu.glitch.mywarehouse.model.Record
-import eu.glitch.mywarehouse.model.WarehouseUnit
+import eu.glitch.mywarehouse.model.RecordDetails
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,13 +23,16 @@ interface RecordDao {
     @Update
     suspend fun updateRecord(record: Record): Int
 
-    @Query("SELECT * FROM records WHERE id = :id")
+    @Query("SELECT * FROM records WHERE r_id = :id")
     suspend fun getRecord(id: Long): Record
 
-    @Query("SELECT * FROM units")
-    fun getAllUnits(): Flow<List<WarehouseUnit>>
-
-    @Query("SELECT * FROM products")
-    fun getAllProducts(): Flow<List<Product>>
+    @Query(
+        "SELECT * FROM records r " +
+                "JOIN products p ON r.product_id = p.p_id " +
+                "JOIN types t ON r.type_id = t.t_id " +
+                "JOIN units u ON r.unit_id = u.u_id "
+    )
+    fun getRecordWithDetails(): Flow<List<RecordDetails>>
+    //+"ORDER BY r.date_to ASC"
 
 }

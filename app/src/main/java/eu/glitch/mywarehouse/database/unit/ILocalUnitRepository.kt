@@ -10,5 +10,6 @@ interface ILocalUnitRepository {
     suspend fun insertUnit(unit: WarehouseUnit): Long
     suspend fun getUnit(id: Long): WarehouseUnit
     suspend fun updateUnit(unit: WarehouseUnit)
+    suspend fun deleteUnit(unit: WarehouseUnit)
 
 }

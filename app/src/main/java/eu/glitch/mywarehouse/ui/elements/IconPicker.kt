@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -78,7 +79,7 @@ fun IconPicker(
             Column(modifier = Modifier.background(color = Color.White)) {
 
                 TextField(value = searchPrompt, onValueChange = { searchPrompt = it }, label = {
-                    Text(text = "Search")
+                    Text(text = stringResource(R.string.search))
                 })
                 HorizontalDivider()
                 LazyVerticalGrid(

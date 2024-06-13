@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
     tableName = "products",
     foreignKeys = [ForeignKey(
         entity = Type::class,
-        parentColumns = ["id"],
+        parentColumns = ["t_id"],
         childColumns = ["type_id"],
         onDelete = ForeignKey.SET_NULL
     )],
@@ -19,6 +19,7 @@ import androidx.room.PrimaryKey
 )
 data class Product(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "p_id")
     var id: Long? = null,
     var name: String,
     @ColumnInfo(name = "type_id")

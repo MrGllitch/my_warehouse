@@ -1,8 +1,7 @@
 package eu.glitch.mywarehouse.database.record
 
-import eu.glitch.mywarehouse.model.Product
 import eu.glitch.mywarehouse.model.Record
-import eu.glitch.mywarehouse.model.WarehouseUnit
+import eu.glitch.mywarehouse.model.RecordDetails
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -30,12 +29,8 @@ class LocalRecordRepositoryImpl @Inject constructor(private val recordDao: Recor
         return recordDao.getRecord(id)
     }
 
-    override fun getUnits(): Flow<List<WarehouseUnit>> {
-        return recordDao.getAllUnits()
-    }
-
-    override fun getProducts(): Flow<List<Product>> {
-        return recordDao.getAllProducts()
+    override fun getRecordWithDetails(): Flow<List<RecordDetails>> {
+        return recordDao.getRecordWithDetails()
     }
 
 

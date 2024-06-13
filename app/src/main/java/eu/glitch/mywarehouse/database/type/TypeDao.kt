@@ -22,6 +22,6 @@ interface TypeDao {
     @Update
     suspend fun updateType(type: Type): Int
 
-    @Query("SELECT * FROM types WHERE id = :id")
+    @Query("SELECT * FROM types WHERE t_id = :id")
     suspend fun getType(id: Long): Type
 }

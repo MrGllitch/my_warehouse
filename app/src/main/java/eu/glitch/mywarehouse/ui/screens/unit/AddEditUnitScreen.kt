@@ -2,13 +2,13 @@ package eu.glitch.mywarehouse.ui.screens.unit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,9 +20,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
+import eu.glitch.mywarehouse.ui.elements.AddEditRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +63,22 @@ fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: Long?) {
     }
 
 
-    Scaffold(topBar = { TopAppBar(title = { Text(text = "Add/Edit Unit") }) }) {
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                text = if (id == null) {
+                    stringResource(R.string.add_unit)
+                } else {
+                    stringResource(R.string.edit_unit)
+                }
+            )
+        }, navigationIcon = {
+            IconButton(
+                onClick = { navigationRouter.returnBack() }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+            }
+        })
+    }) {
         AddEditProductScreenContent(paddingValues = it, data = data, actions = viewModel)
     }
 }
@@ -70,13 +89,17 @@ fun AddEditProductScreenContent(
     data: AddEditUnitData,
     actions: AddEditUnitActions
 ) {
-    Column(modifier = Modifier.padding(paddingValues)) {
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(16.dp)
+    ) {
 
         OutlinedTextField(value = data.unit.name,
             onValueChange = { actions.nameChanged(it) },
             label = {
                 Text(
-                    text = "Jmeno jednotky"
+                    text = stringResource(R.string.unit_name)
                 )
             },
 
@@ -93,7 +116,7 @@ fun AddEditProductScreenContent(
             onValueChange = { actions.shortCutChanged(it) },
             label = {
                 Text(
-                    text = "Zkratka jednotky"
+                    text = stringResource(R.string.unit_shortcut)
                 )
             },
             isError = data.unitError != null,
@@ -103,12 +126,12 @@ fun AddEditProductScreenContent(
                 }
             }
         )
-        Row {
-            Button(onClick = { actions.addEditUnit() }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "")
-                Text(text = "Pridat")
-            }
-        }
+        Spacer(modifier = Modifier.weight(1.0f))
+        AddEditRow(
+            name = "Record",
+            id = data.unit.id,
+            onAddEdit = { actions.addEditUnit() },
+            onDelete = { actions.deleteUnit() })
     }
 }
 

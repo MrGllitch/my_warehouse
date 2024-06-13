@@ -1,15 +1,22 @@
 package eu.glitch.mywarehouse.ui.elements
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 
 
 @Composable
-fun GetIconByName(modifier: Modifier = Modifier, name: String, contentDescription: String) {
+fun GetIconByName(
+    modifier: Modifier = Modifier,
+    name: String,
+    contentDescription: String,
+    tint: Color = LocalContentColor.current
+) {
     val context = LocalContext.current
     val drawableId = context.resources.getIdentifier(
         name,
@@ -19,6 +26,7 @@ fun GetIconByName(modifier: Modifier = Modifier, name: String, contentDescriptio
     Icon(
         modifier = modifier,
         imageVector = ImageVector.vectorResource(drawableId),
-        contentDescription = contentDescription
+        contentDescription = contentDescription,
+        tint = tint
     )
 }

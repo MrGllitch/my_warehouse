@@ -22,6 +22,6 @@ interface UnitDao {
     @Update
     suspend fun updateUnit(unit: WarehouseUnit): Int
 
-    @Query("SELECT * FROM units WHERE id = :id")
+    @Query("SELECT * FROM units WHERE u_id = :id")
     suspend fun getUnit(id: Long): WarehouseUnit
 }

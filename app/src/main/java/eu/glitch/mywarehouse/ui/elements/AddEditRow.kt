@@ -12,17 +12,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import eu.glitch.mywarehouse.R
 
 @Composable
 fun AddEditRow(
     name: String?,
     id: Long?,
     onAddEdit: () -> Unit,
-    onCancel: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var isAlertVisible by remember {
@@ -30,23 +31,17 @@ fun AddEditRow(
     }
     Row(modifier = Modifier.fillMaxWidth()) {
         if (id == null) {
-            Button(onClick = { onCancel() }) {
-                Text(text = "Zrusit")
-            }
             Spacer(modifier = Modifier.weight(1.0f))
             Button(onClick = { onAddEdit() }) {
-                Text(text = "Pridat")
+                Text(text = stringResource(R.string.add))
             }
         } else {
-            Button(onClick = { onCancel() }) {
-                Text(text = "Zrusit")
-            }
             Spacer(modifier = Modifier.weight(1.0f))
             Button(onClick = { isAlertVisible = true }) {
-                Text(text = "Smazat")
+                Text(text = stringResource(R.string.remove))
             }
             Button(onClick = { onAddEdit() }) {
-                Text(text = "Zmenit")
+                Text(text = stringResource(R.string.submit))
             }
         }
     }
@@ -55,7 +50,7 @@ fun AddEditRow(
             onDismissRequest = { isAlertVisible = false },
             title = {
                 Text(buildAnnotatedString {
-                    append("Are you sure you want to delete ")
+                    append(stringResource(R.string.are_u_sure))
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("$name")
                     }
@@ -68,18 +63,18 @@ fun AddEditRow(
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("$name ")
                     }
-                    append("will be permanently deleted from your app and you cant access it anymore in all page of applications!")
+                    append(stringResource(R.string.will_be_deleted))
                 })
             },
             confirmButton = {
                 Button(
                     onClick = { onDelete() }) {
-                    Text(text = "yes")
+                    Text(text = stringResource(R.string.yes))
                 }
             },
             dismissButton = {
                 Button(onClick = { isAlertVisible = false }) {
-                    Text(text = "cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
             }
         )

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
+import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditProductViewModel @Inject constructor(
-    private val productRepository: ILocalProductRepository, @ApplicationContext val context: Context
+    private val productRepository: ILocalProductRepository,
+    private val typeRepository: ILocalTypeRepository,
+    @ApplicationContext val context: Context
 ) : ViewModel(), AddEditProductActions {
 
 
@@ -112,7 +115,7 @@ class AddEditProductViewModel @Inject constructor(
 
     fun loadTypes() {
         viewModelScope.launch {
-            productRepository.getTypes().collect() {
+            typeRepository.getTypes().collect() {
                 data.types = it.toMutableList()
                 _addEditProductUIState.update {
                     AddEditProductUIState.ProductStateChanged(data)

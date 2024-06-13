@@ -2,4 +2,12 @@
 <resources>
 
     <style name="Theme.MyWarehouse" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.SplashScreen.MyWarehouse" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyWarehouse</item>
+        <item name="windowSplashScreenAnimationDuration">1800</item>
+
+    </style>
 </resources>

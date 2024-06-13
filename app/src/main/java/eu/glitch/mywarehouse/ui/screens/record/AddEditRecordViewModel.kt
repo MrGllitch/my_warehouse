@@ -3,8 +3,12 @@ package eu.glitch.mywarehouse.ui.screens.record
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import eu.glitch.mywarehouse.database.product.ILocalProductRepository
 import eu.glitch.mywarehouse.database.record.ILocalRecordRepository
+import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
+import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
 import eu.glitch.mywarehouse.model.Record
+import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,16 +17,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditRecordViewModel @Inject constructor(
-    private val recordRepository: ILocalRecordRepository
+    private val recordRepository: ILocalRecordRepository,
+    private val productRepository: ILocalProductRepository,
+    private val unitRepository: ILocalUnitRepository,
+    private val typeRepository: ILocalTypeRepository
 ) : ViewModel(), AddEditRecordActions {
 
     var data: AddEditRecordData = AddEditRecordData()
+    var types: List<Type> = listOf()
 
     private val _addEditRecordUIState: MutableStateFlow<AddEditRecordUIState> =
         MutableStateFlow(value = AddEditRecordUIState.Loading)
     val addEditProductUIState = _addEditRecordUIState.asStateFlow()
+
+
     override fun productChanged(id: String) {
         data.record.productId = id
+        val type = types.find { it.id == id.toLong() }
+        data.record.typeId = type?.id.toString()
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
@@ -108,6 +120,7 @@ class AddEditRecordViewModel @Inject constructor(
             id = null,
             productId = data.record.productId.toLong(),
             unitId = data.record.unitId.toLong(),
+            typeId = data.record.typeId.toLong(),
             quantity = data.record.quantity.toInt(),
             startQuantity = data.record.quantity.toInt(),
             dateFrom = currentMillis,
@@ -134,7 +147,7 @@ class AddEditRecordViewModel @Inject constructor(
 
     fun loadProducts() {
         viewModelScope.launch {
-            recordRepository.getProducts().collect() {
+            productRepository.getProducts().collect() {
                 data.products = it.toMutableList()
                 _addEditRecordUIState.update {
                     AddEditRecordUIState.RecordDataChanged(data)
@@ -146,11 +159,19 @@ class AddEditRecordViewModel @Inject constructor(
 
     fun loadUnits() {
         viewModelScope.launch {
-            recordRepository.getUnits().collect() {
+            unitRepository.getUnits().collect() {
                 data.units = it.toMutableList()
                 _addEditRecordUIState.update {
                     AddEditRecordUIState.RecordDataChanged(data)
                 }
+            }
+        }
+    }
+
+    fun loadTypes() {
+        viewModelScope.launch {
+            typeRepository.getTypes().collect() {
+                types = it.toMutableList()
             }
         }
     }

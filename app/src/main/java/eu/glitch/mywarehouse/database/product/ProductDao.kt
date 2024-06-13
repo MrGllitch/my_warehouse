@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import eu.glitch.mywarehouse.model.Product
-import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,10 +23,7 @@ interface ProductDao {
     @Update
     suspend fun updateProduct(product: Product): Int
 
-    @Query("SELECT * FROM products WHERE id = :id")
+    @Query("SELECT * FROM products WHERE p_id = :id")
     suspend fun getProduct(id: Long): Product
-
-    @Query("SELECT * FROM types")
-    fun getAllTypes(): Flow<List<Type>>
 
 }

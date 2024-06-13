@@ -1,15 +1,8 @@
 package eu.glitch.mywarehouse.navigation
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.AccountBox
-import androidx.compose.material.icons.outlined.Face
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,7 +17,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import eu.glitch.mywarehouse.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,27 +34,27 @@ fun NavigationDrawer(
 
     val items = listOf(
         NavigationItems(
-            title = "Zaznamy",
-            selectedIcon = Icons.AutoMirrored.Filled.ReceiptLong,
-            unselectedIcon = Icons.AutoMirrored.Outlined.ReceiptLong,
+            title = stringResource(R.string.records),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_receipt_long),
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_receipt_long_outline),
             destination = Destination.RecordListScreen
         ),
         NavigationItems(
-            title = "Produkty",
-            selectedIcon = Icons.Filled.AccountBox,
-            unselectedIcon = Icons.Outlined.AccountBox,
+            title = stringResource(R.string.Products),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_apps), //apps
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_apps),
             destination = Destination.ProductListScreen
         ),
         NavigationItems(
-            title = "Typy",
-            selectedIcon = Icons.Filled.Face,
-            unselectedIcon = Icons.Outlined.Face,
+            title = stringResource(R.string.types),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_discount), //discount
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_discount),
             destination = Destination.TypeListScreen
         ),
         NavigationItems(
-            title = "Jednotky",
-            selectedIcon = Icons.Filled.Person,
-            unselectedIcon = Icons.Outlined.Person,
+            title = stringResource(R.string.units),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_category), //category
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_category),
             destination = Destination.UnitListScreen
         ),
     )
@@ -68,7 +67,7 @@ fun NavigationDrawer(
 
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
-            Text(text = "Muj sklad", modifier = Modifier.padding(16.dp))
+            Text(text = stringResource(R.string.app_name), modifier = Modifier.padding(16.dp))
             HorizontalDivider()
             items.forEachIndexed { index, item ->
                 androidx.compose.material3.NavigationDrawerItem(
@@ -97,6 +96,17 @@ fun NavigationDrawer(
                         }
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1.0f))
+            HorizontalDivider()
+            Row {
+                Spacer(modifier = Modifier.weight(1.0f))
+                Text(
+                    text = stringResource(R.string.version),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    color = Color.Gray,
+                    fontSize = 12.sp
                 )
             }
         }

@@ -1,13 +1,16 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -32,14 +35,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import eu.glitch.mywarehouse.model.Record
+import eu.glitch.mywarehouse.R
+import eu.glitch.mywarehouse.model.RecordDetails
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
+import eu.glitch.mywarehouse.ui.elements.GetIconByName
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
 import eu.glitch.mywarehouse.utils.DateUtils
 import kotlinx.coroutines.launch
@@ -60,9 +67,7 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     state.value.let {
         when (it) {
             RecordListUIState.Loading -> {
-                viewModel.loadRecords()
-                viewModel.loadProducts()
-                viewModel.loadUnits()
+                viewModel.loadRecordDetails()
             }
 
             is RecordListUIState.RecordListChanged -> {
@@ -74,7 +79,7 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter, content = {
         Scaffold(topBar = {
-            TopAppBar(title = { Text(text = "Record List") },
+            TopAppBar(title = { Text(text = stringResource(R.string.record_list)) },
                 navigationIcon = {
                     val coroutineScope = rememberCoroutineScope()
                     IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
@@ -109,7 +114,7 @@ fun ProductListScreenContent(
         data.records.forEach {
             item {
                 RecordRow(
-                    record = it,
+                    recordDetails = it,
                     actions = actions,
                     data = data,
                     onClick = { isEditVisible = true })
@@ -121,16 +126,13 @@ fun ProductListScreenContent(
         EditRecord(data = data, actions = actions, onCancel = { isEditVisible = false })
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordRow(
-    record: Record,
+    recordDetails: RecordDetails,
     actions: RecordListActions,
     data: RecordListData,
     onClick: () -> Unit
 ) {
-    val product = data.products.find { it.id == record.productId }
-    val unit = data.units.find { it.id == record.unitId }
     val oneMonthFromToday = Calendar.getInstance().apply {
         add(Calendar.MONTH, 1)
     }.timeInMillis
@@ -139,23 +141,27 @@ fun RecordRow(
     Row(modifier = Modifier
         .padding(16.dp)
         .clickable {
-            actions.setEditedRecord(record)
-            data.tempQuantity = record.quantity.toString()
-            data.editName = product!!.name
-            data.unit = unit!!.name
+            Log.d("clicking", "${recordDetails.record.id} ")
+            actions.setEditedRecord(recordDetails)
+            data.tempQuantity = recordDetails.record.quantity.toString()
+
             onClick()
         }) {
-        //GetIconByName(name = product.icon, contentDescription = )
+        GetIconByName(name = recordDetails.type.iconRoute, contentDescription = "")
         Column(verticalArrangement = Arrangement.Center) {
             Text(
-                text = "Trvanlivost do ${DateUtils.getDateString(record.dateTo)}",
+                text = stringResource(R.string.best_before) + " ${
+                    DateUtils.getDateString(
+                        recordDetails.record.dateTo
+                    )
+                }",
                 fontSize = 12.sp,
-                color = if (record.dateTo <= oneMonthFromToday) Color.Red else Color.Black
+                color = if (recordDetails.record.dateTo <= oneMonthFromToday) Color.Red else Color.Black
             )
-            Text(text = product!!.name, fontSize = 32.sp)
+            Text(text = recordDetails.product.name, fontSize = 32.sp)
         }
         Spacer(modifier = Modifier.weight(1.0f))
-        Text(text = "${record.quantity}/${record.startQuantity}")
+        Text(text = "${recordDetails.record.quantity}/${recordDetails.record.startQuantity} ${recordDetails.unit!!.shortcut}")
     }
     HorizontalDivider()
 }
@@ -172,28 +178,36 @@ fun EditRecord(
                 .background(Color.White)
                 .padding(16.dp)
         ) {
-            Row {
-                Text(text = data.editName)
+            Row(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = data.editRecord!!.product!!.name,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1.0f))
                 Button(onClick = {
                     actions.quantityChanged("0")
                     actions.submitChanges()
                     onCancel()
                 }) {
-                    Text(text = "vyskladnit vse")
+                    Text(text = "0")
                 }
             }
 
             TextFieldWError(
-                label = "quantity",
+                label = stringResource(R.string.quantity),
                 value = data.tempQuantity,
                 onValueChanged = { actions.quantityChanged(it) },
                 error = data.editRecordQuantityError,
                 keyboardNumber = true,
                 trailingIcon = {
-                    //Text(text = )
+                    Text(text = data.editRecord!!.unit!!.shortcut)
                 }
             )
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 EditRecordButton(
                     value = "-1",
                     onClick = { actions.quantityChanged((data.tempQuantity.toInt() - 1).toString()) })
@@ -210,15 +224,16 @@ fun EditRecord(
                     value = "-50",
                     onClick = { actions.quantityChanged((data.tempQuantity.toInt() - 50).toString()) })
             }
-            Row {
+            Row(modifier = Modifier.padding(8.dp)) {
                 Button(onClick = { onCancel() }) {
-                    Text(text = "cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
+                Spacer(modifier = Modifier.weight(1.0f))
                 Button(onClick = {
                     actions.submitChanges()
                     onCancel()
                 }) {
-                    Text(text = "Submit")
+                    Text(text = stringResource(R.string.submit))
                 }
             }
         }
@@ -232,7 +247,9 @@ fun EditRecordButton(
     onClick: () -> Unit,
 
     ) {
-    Button(onClick = { onClick() }) {
+    IconButton(modifier = Modifier.border(
+        BorderStroke(width = 1.dp, color = Color.Gray)
+    ), onClick = { onClick() }) {
         Text(text = value)
     }
 }
