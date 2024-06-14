@@ -94,6 +94,7 @@ class AddEditProductViewModel @Inject constructor(
     }
 
     override fun deleteProduct() {
+        removePhoto()
         viewModelScope.launch {
             productRepository.deleteProduct(data.product)
         }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ILocalUnitRepository {
     fun getUnits(): Flow<List<WarehouseUnit>>
+    suspend fun getUnitsSize(): Int
 
     suspend fun insertUnit(unit: WarehouseUnit): Long
     suspend fun getUnit(id: Long): WarehouseUnit

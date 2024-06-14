@@ -10,6 +10,10 @@ class LocalUnitRepositoryImpl @Inject constructor(private val unitDao: UnitDao) 
         return unitDao.getAllUnits()
     }
 
+    override suspend fun getUnitsSize(): Int {
+        return unitDao.getUnitsSize()
+    }
+
     override suspend fun insertUnit(unit: WarehouseUnit): Long {
         return unitDao.insertUnit(unit = unit)
     }

@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

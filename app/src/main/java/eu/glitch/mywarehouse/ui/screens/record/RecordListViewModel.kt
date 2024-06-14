@@ -54,7 +54,8 @@ class RecordListViewModel @Inject constructor(
         viewModelScope.launch {
             recordRepository.getRecordWithDetails().collect {
                 data.records = it.toMutableList()
-
+                val filteredList = data.records.filter { it.record.quantity > 0 }
+                data.records = filteredList.toMutableList()
                 data.records.forEach {
                     Log.d(
                         "loaded",

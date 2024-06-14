@@ -41,4 +41,15 @@
     <string name="units">Units</string>
     <string name="version">Version 1.0.0</string>
     <string name="remove">Remove</string>
+    <string name="kolonial">Colonial</string>
+    <string name="chlazene">Refrigerated</string>
+    <string name="mrazene">Frozen</string>
+    <string name="gram">Gram</string>
+    <string name="kilogram">Kilogram</string>
+    <string name="mililitr">Milliter</string>
+    <string name="litr">Liter</string>
+    <string name="kus">Piece</string>
+    <string name="ks">PCS</string>
+    <string name="please_create_product">Please Create Product First</string>
+    <string name="please_create_record">Please Create Record</string>
 </resources>

@@ -13,6 +13,9 @@ interface UnitDao {
     @Query("SELECT * FROM units")
     fun getAllUnits(): Flow<List<WarehouseUnit>>
 
+    @Query("SELECT COUNT(*) From units")
+    suspend fun getUnitsSize(): Int
+
     @Insert
     suspend fun insertUnit(unit: WarehouseUnit): Long
 

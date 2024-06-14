@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -48,6 +52,7 @@ import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
+import eu.glitch.mywarehouse.ui.elements.shake
 import eu.glitch.mywarehouse.utils.DateUtils
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -63,6 +68,7 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     }
 
     val state = viewModel.recordListUIState.collectAsStateWithLifecycle()
+    var isEmpty = false
 
     state.value.let {
         when (it) {
@@ -72,6 +78,7 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
 
             is RecordListUIState.RecordListChanged -> {
                 data = it.data
+                isEmpty = it.data.records.isEmpty()
             }
         }
     }
@@ -88,11 +95,16 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
                 })
         },
             floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    navigationRouter.navigateToAddEditRecordScreen(
-                        null
-                    )
-                }) {
+                FloatingActionButton(
+                    modifier = if (isEmpty) {
+                        Modifier.shake()
+                    } else {
+                        Modifier
+                    }, onClick = {
+                        navigationRouter.navigateToAddEditRecordScreen(
+                            null
+                        )
+                    }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
             }) {
@@ -110,20 +122,43 @@ fun ProductListScreenContent(
     var isEditVisible by remember {
         mutableStateOf(false)
     }
-    LazyColumn(modifier = Modifier.padding(paddingValues)) {
-        data.records.forEach {
-            item {
-                RecordRow(
-                    recordDetails = it,
-                    actions = actions,
-                    data = data,
-                    onClick = { isEditVisible = true })
+    if (data.records.isEmpty()) {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "",
+                modifier = Modifier.size(32.dp),
+                tint = Color.Gray
+            )
+            Text(
+                text = stringResource(R.string.please_create_record),
+                modifier = Modifier.padding(top = 16.dp, bottom = 160.dp),
+                fontSize = 28.sp,
+                color = Color.Gray
+            )
+        }
+    } else {
+        LazyColumn(modifier = Modifier.padding(paddingValues)) {
+            data.records.forEach {
+                item {
+                    RecordRow(
+                        recordDetails = it,
+                        actions = actions,
+                        data = data,
+                        onClick = { isEditVisible = true })
+                }
             }
         }
-    }
 
-    if (isEditVisible)
-        EditRecord(data = data, actions = actions, onCancel = { isEditVisible = false })
+        if (isEditVisible)
+            EditRecord(data = data, actions = actions, onCancel = { isEditVisible = false })
+    }
 }
 
 @Composable

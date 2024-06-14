@@ -222,7 +222,8 @@ fun AddEditProductScreenContent(
             name = data.product.name,
             id = data.product.id,
             onAddEdit = { actions.addEditProduct() },
-            onDelete = {//todo
+            onDelete = {
+                actions.deleteProduct()
             }
         )
     }
