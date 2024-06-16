@@ -28,7 +28,9 @@ class AddEditTypeViewModel @Inject constructor(
     }
 
     override fun nameChanged(text: String) {
-        data.type.name = text
+        if (text.length < 32) {
+            data.type.name = text
+        }
         _addEditTypeUIState.update {
             AddEditTypeUIState.TypeStateChanged(data)
         }

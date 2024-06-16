@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -238,7 +239,7 @@ fun BarcodeSelector(
     Column {
         Row(modifier = Modifier.clickable { navigationRouter.navigateToBarcodeScannerScreen() }) {
             GetIconByName(name = "icon_barcode", contentDescription = "")
-            if (data.barcode == "") {
+            if (data.product.barcode == "") {
                 Text(text = stringResource(R.string.scan_code))
             } else {
                 Text(text = stringResource(R.string.rescan_code))
@@ -246,8 +247,9 @@ fun BarcodeSelector(
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "")
                 }
             }
-            Text(text = "${data.barcode}")
         }
+        Text(text = "${data.product.barcode}", fontSize = 8.sp)
+
     }
 }
 

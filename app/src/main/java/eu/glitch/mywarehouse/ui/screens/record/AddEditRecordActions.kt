@@ -8,6 +8,5 @@ interface AddEditRecordActions {
     fun dateToChanged(dateTo: String)
 
     fun addEditRecord()
-    fun deleteRecord()
 
 }

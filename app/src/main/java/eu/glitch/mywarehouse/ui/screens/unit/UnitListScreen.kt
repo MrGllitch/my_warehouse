@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
+import eu.glitch.mywarehouse.ui.theme.displayFontFamily
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,8 +136,18 @@ fun UnitRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text(text = shortCut)
-            Text(text = name, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = shortCut,
+                fontFamily = displayFontFamily, fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                modifier = Modifier.width(230.dp),
+                text = name,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Light,
+                maxLines = 3
+            )
         }
         Spacer(modifier = Modifier.weight(1.0f))
         Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")

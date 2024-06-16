@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyWarehouse</string>
+    <string name="app_name">My Warehouse</string>
     <string name="records">Records</string>
     <string name="add">Add</string>
     <string name="submit">Submit</string>
@@ -39,7 +39,7 @@
     <string name="Products">Products</string>
     <string name="types">Types</string>
     <string name="units">Units</string>
-    <string name="version">Version 1.0.0</string>
+    <string name="version">Version:</string>
     <string name="remove">Remove</string>
     <string name="kolonial">Colonial</string>
     <string name="chlazene">Refrigerated</string>
@@ -50,6 +50,10 @@
     <string name="litr">Liter</string>
     <string name="kus">Piece</string>
     <string name="ks">PCS</string>
-    <string name="please_create_product">Please Create Product First</string>
-    <string name="please_create_record">Please Create Record</string>
+    <string name="please_create_product">No Product</string>
+    <string name="please_create_record">No Record</string>
+    <string name="error_product_not_found">Error, product not found</string>
+    <string name="product_set">Product set</string>
+    <string name="select_icon">Select icon</string>
+
 </resources>

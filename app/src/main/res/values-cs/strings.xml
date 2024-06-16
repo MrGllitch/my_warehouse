@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MujSklad</string>
+    <string name="app_name">Můj Sklad</string>
     <string name="records">Zaznamy</string>
     <string name="Products">Produkty</string>
     <string name="types">Typy</string>
     <string name="units">Jednotky</string>
-    <string name="version">Verze 1.0.0</string>
+    <string name="version">Verze:</string>
     <string name="remove">Smazat</string>
     <string name="add">Přidat</string>
     <string name="submit">Potvrdit</string>
@@ -51,6 +51,9 @@
     <string name="litr">Litr</string>
     <string name="kus">Kus</string>
     <string name="ks">KS</string>
-    <string name="please_create_product">Prosím nejprve vytvořte produkt</string>
-    <string name="please_create_record">Prosím nejprve vytvořte záznam</string>
+    <string name="please_create_product">Žádný Produkt</string>
+    <string name="please_create_record">Žádný záznam</string>
+    <string name="error_product_not_found">Chyba, produkt nenalezen</string>
+    <string name="product_set">Produkt nastaven</string>
+    <string name="select_icon">Vybrat ikonu</string>
 </resources>

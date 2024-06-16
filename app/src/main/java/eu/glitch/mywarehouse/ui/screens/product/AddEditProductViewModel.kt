@@ -34,7 +34,9 @@ class AddEditProductViewModel @Inject constructor(
         MutableStateFlow(value = AddEditProductUIState.Loading)
     val addEditProductUIState = _addEditProductUIState.asStateFlow()
     override fun nameChanged(text: String) {
-        data.product.name = text
+        if (text.length < 64) {
+            data.product.name = text
+        }
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }
@@ -52,7 +54,7 @@ class AddEditProductViewModel @Inject constructor(
     }
 
     override fun barcodeChanged(barcode: String) {
-        data.barcode = barcode
+        data.product.barcode = barcode
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }

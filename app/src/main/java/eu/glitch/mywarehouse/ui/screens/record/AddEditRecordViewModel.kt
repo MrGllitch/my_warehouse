@@ -1,8 +1,11 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
 import eu.glitch.mywarehouse.database.record.ILocalRecordRepository
 import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
@@ -20,7 +23,8 @@ class AddEditRecordViewModel @Inject constructor(
     private val recordRepository: ILocalRecordRepository,
     private val productRepository: ILocalProductRepository,
     private val unitRepository: ILocalUnitRepository,
-    private val typeRepository: ILocalTypeRepository
+    private val typeRepository: ILocalTypeRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel(), AddEditRecordActions {
 
     var data: AddEditRecordData = AddEditRecordData()
@@ -64,6 +68,17 @@ class AddEditRecordViewModel @Inject constructor(
 
     override fun dateToChanged(dateTo: String) {
         data.record.dateTo = dateTo
+        _addEditRecordUIState.update {
+            AddEditRecordUIState.RecordDataChanged(data)
+        }
+    }
+
+    fun barcodePrepopulate(code: String) {
+        Log.d("barcode", "trying to find product: ${data.products} ")
+        val product = data.products.find { it.barcode == code }
+        if (product != null) {
+            productChanged(product!!.id.toString())
+        }
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
@@ -140,10 +155,6 @@ class AddEditRecordViewModel @Inject constructor(
         }
     }
 
-
-    override fun deleteRecord() {
-        //TODO("Not yet implemented")
-    }
 
     fun loadProducts() {
         viewModelScope.launch {

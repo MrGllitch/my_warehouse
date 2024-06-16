@@ -23,7 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import eu.glitch.mywarehouse.BuildConfig
 import eu.glitch.mywarehouse.R
+import eu.glitch.mywarehouse.ui.theme.displayFontFamily
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,6 +33,8 @@ fun NavigationDrawer(
     content: @Composable () -> Unit,
     drawerState: DrawerState, navigationRouter: INavigationRouter
 ) {
+
+    val versionName = BuildConfig.VERSION_NAME
 
     val items = listOf(
         NavigationItems(
@@ -67,7 +71,11 @@ fun NavigationDrawer(
 
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
-            Text(text = stringResource(R.string.app_name), modifier = Modifier.padding(16.dp))
+            Text(
+                text = stringResource(R.string.app_name),
+                modifier = Modifier.padding(16.dp),
+                fontFamily = displayFontFamily
+            )
             HorizontalDivider()
             items.forEachIndexed { index, item ->
                 androidx.compose.material3.NavigationDrawerItem(
@@ -103,7 +111,7 @@ fun NavigationDrawer(
             Row {
                 Spacer(modifier = Modifier.weight(1.0f))
                 Text(
-                    text = stringResource(R.string.version),
+                    text = stringResource(R.string.version) + " " + versionName,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     color = Color.Gray,
                     fontSize = 12.sp

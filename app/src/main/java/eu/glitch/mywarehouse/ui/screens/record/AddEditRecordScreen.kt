@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -41,14 +42,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import eu.glitch.mywarehouse.R
+import eu.glitch.mywarehouse.extensions.getValue
+import eu.glitch.mywarehouse.model.Barcode
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.ui.elements.AddEditRow
 import eu.glitch.mywarehouse.utils.DateUtils
@@ -58,6 +67,19 @@ import eu.glitch.mywarehouse.utils.DateUtils
 fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
 
     val viewModel = hiltViewModel<AddEditRecordViewModel>()
+
+    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+        val barcode = navigationRouter.getNavController().getValue<String>("barcode")
+        barcode?.value?.let {
+            val moshi: Moshi = Moshi.Builder().build()
+            val jsonAdapter: JsonAdapter<Barcode> = moshi.adapter(Barcode::class.java)
+            val result = jsonAdapter.fromJson(it)
+            result?.let {
+                Log.d("barcode", "returned with barcode ${it.code} ")
+                viewModel.barcodePrepopulate(it.code)
+            }
+        }
+    }
 
     var data by remember {
         mutableStateOf(AddEditRecordData())
@@ -103,7 +125,15 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
                 onClick = { navigationRouter.returnBack() }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "close")
             }
-        })
+        },
+            actions = {
+                IconButton(onClick = { navigationRouter.navigateToBarcodeScannerScreen() }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.icon_barcode),
+                        contentDescription = ""
+                    )
+                }
+            })
     }) {
         AddEditProductScreenContent(
             paddingValues = it,
@@ -316,7 +346,7 @@ fun AddEditProductScreenContent(
             name = stringResource(R.string.record),
             id = data.record.id,
             onAddEdit = { actions.addEditRecord() },
-            onDelete = { actions.deleteRecord() })
+            onDelete = { })
     }
 
 

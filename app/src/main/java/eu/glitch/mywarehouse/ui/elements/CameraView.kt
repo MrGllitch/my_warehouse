@@ -9,7 +9,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -58,6 +60,8 @@ fun CameraView(
         .build()
 
 
+
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
@@ -73,7 +77,14 @@ fun CameraView(
 
     if (cameraPermissionState.status.isGranted) {
         Dialog(onDismissRequest = { onDismissRequest() }) {
-            Box(contentAlignment = Alignment.BottomCenter, modifier = modifier.fillMaxSize()) {
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = modifier
+                    .fillMaxHeight(0.7f)
+                    .fillMaxWidth(0.9f)
+
+
+            ) {
                 AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
                 IconButton(

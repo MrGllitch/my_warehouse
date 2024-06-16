@@ -10,11 +10,16 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        val versionMajor = 1
+        val versionMinor = 0
+        val versionPatch = 0
+        val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
+        val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
         applicationId = "eu.glitch.mywarehouse"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = myVersionCode
+        versionName = myVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -40,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -78,6 +84,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.ui.text.google.fonts)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

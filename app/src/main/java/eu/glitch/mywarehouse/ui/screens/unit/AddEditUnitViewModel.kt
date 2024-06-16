@@ -21,7 +21,9 @@ class AddEditUnitViewModel @Inject constructor(
         MutableStateFlow(value = AddEditUnitUIState.Loading)
     val addEditProductUIState = _addEditProductUIState.asStateFlow()
     override fun nameChanged(text: String) {
-        data.unit.name = text
+        if (text.length < 32) {
+            data.unit.name = text
+        }
         _addEditProductUIState.update {
             AddEditUnitUIState.UnitStateChanged(data)
         }
@@ -80,6 +82,9 @@ class AddEditUnitViewModel @Inject constructor(
     override fun deleteUnit() {
         viewModelScope.launch {
             unitRepository.deleteUnit(data.unit)
+        }
+        _addEditProductUIState.update {
+            AddEditUnitUIState.Success
         }
     }
 

@@ -124,14 +124,15 @@ fun AddEditProductScreenContent(
 
         Button(onClick = { showIconPickerDialog = true }) {
             Row {
+
                 if (data.type.iconRoute != "") {
-                    Row {
-                        Text(text = stringResource(R.string.icon))
-                        GetIconByName(name = data.type.iconRoute, contentDescription = "")
-                    }
+                    GetIconByName(name = data.type.iconRoute, contentDescription = "")
                 } else {
-                    stringResource(R.string.icon)
+                    Text(
+                        text = stringResource(R.string.select_icon)
+                    )
                 }
+
             }
         }
 

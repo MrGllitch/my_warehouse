@@ -30,9 +30,10 @@ interface RecordDao {
         "SELECT * FROM records r " +
                 "JOIN products p ON r.product_id = p.p_id " +
                 "JOIN types t ON r.type_id = t.t_id " +
-                "JOIN units u ON r.unit_id = u.u_id "
+                "JOIN units u ON r.unit_id = u.u_id " +
+                "ORDER BY r.date_to ASC"
+
     )
     fun getRecordWithDetails(): Flow<List<RecordDetails>>
-    //+"ORDER BY r.date_to ASC"
 
 }

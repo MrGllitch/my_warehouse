@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -154,7 +152,7 @@ fun ProductListScreenContent(
         }
     } else {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(2),
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
@@ -173,10 +171,10 @@ fun ProductListScreenContent(
                             .padding(4.dp)
                             .shadow(2.dp)
                             .padding(10.dp)
-                            .height(150.dp)
-
+                            .height(170.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Box {
+                        Box(contentAlignment = Alignment.TopEnd) {
 
                             if (product.imageName == "") {
                                 Image(
@@ -198,22 +196,23 @@ fun ProductListScreenContent(
                                 )
                             }
                             GetIconByName(
-                                name = type!!.iconRoute,
+                                name = type?.iconRoute ?: "icon_box",
                                 contentDescription = "",
                                 modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
-                        Row(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
 
-                            Text(text = product.name, fontSize = 18.sp)
-                        }
+
+                        Text(
+                            text = product.name,
+                            fontSize = when (product.name.length) {
+                                in 32..37 -> 14.sp
+                                in 38..64 -> 9.sp
+                                else -> 18.sp
+                            }
+                        )
+
                     }
                 }
             }
