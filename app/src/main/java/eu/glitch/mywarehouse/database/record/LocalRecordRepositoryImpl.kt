@@ -1,8 +1,10 @@
 package eu.glitch.mywarehouse.database.record
 
 import eu.glitch.mywarehouse.model.Record
-import eu.glitch.mywarehouse.model.RecordDetails
+import eu.glitch.mywarehouse.model.RecordListItem
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LocalRecordRepositoryImpl @Inject constructor(private val recordDao: RecordDao) :
@@ -29,8 +31,23 @@ class LocalRecordRepositoryImpl @Inject constructor(private val recordDao: Recor
         return recordDao.getRecord(id)
     }
 
-    override fun getRecordWithDetails(): Flow<List<RecordDetails>> {
-        return recordDao.getRecordWithDetails()
+    override fun getRecordListItems(): Flow<List<RecordListItem>> = flow {
+
+        val baseList = recordDao.getRecordListItems().first()
+        val recordListItems = baseList.map { base ->
+            val chipIds = recordDao.getChipIdsForProduct(base.record.productId)
+            RecordListItem(
+                record = base.record,
+                name = base.name,
+                shortcut = base.shortcut,
+                typeId = base.typeId,
+                chipIds = chipIds,
+                iconRoute = base.iconRoute
+            )
+        }
+        emit(recordListItems)
+
+        // return recordDao.getRecordListItems()
     }
 
 

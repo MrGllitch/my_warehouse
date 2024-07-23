@@ -51,15 +51,21 @@ fun NavigationDrawer(
         ),
         NavigationItems(
             title = stringResource(R.string.types),
-            selectedIcon = ImageVector.vectorResource(R.drawable.icon_discount), //discount
-            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_discount),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_category),
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_category),
             destination = Destination.TypeListScreen
         ),
         NavigationItems(
             title = stringResource(R.string.units),
-            selectedIcon = ImageVector.vectorResource(R.drawable.icon_category), //category
-            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_category),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_ruler),
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_ruler),
             destination = Destination.UnitListScreen
+        ),
+        NavigationItems(
+            title = stringResource(R.string.tag),
+            selectedIcon = ImageVector.vectorResource(R.drawable.icon_discount),
+            unselectedIcon = ImageVector.vectorResource(R.drawable.icon_discount),
+            destination = Destination.AddEditChipScreen
         ),
     )
 

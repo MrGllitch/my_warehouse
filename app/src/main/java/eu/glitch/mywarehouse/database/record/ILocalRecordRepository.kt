@@ -1,7 +1,7 @@
 package eu.glitch.mywarehouse.database.record
 
 import eu.glitch.mywarehouse.model.Record
-import eu.glitch.mywarehouse.model.RecordDetails
+import eu.glitch.mywarehouse.model.RecordListItem
 import kotlinx.coroutines.flow.Flow
 
 
@@ -16,7 +16,7 @@ interface ILocalRecordRepository {
 
     suspend fun getRecord(id: Long): Record
 
-    fun getRecordWithDetails(): Flow<List<RecordDetails>>
+    fun getRecordListItems(): Flow<List<RecordListItem>>
 
 
 }

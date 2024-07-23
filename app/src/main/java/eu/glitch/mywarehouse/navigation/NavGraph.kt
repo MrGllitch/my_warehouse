@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import eu.glitch.mywarehouse.ui.screens.BarcodeScannerScreen
+import eu.glitch.mywarehouse.ui.screens.chip.AddEditChipScreen
 import eu.glitch.mywarehouse.ui.screens.product.AddEditProductScreen
 import eu.glitch.mywarehouse.ui.screens.product.ProductListScreen
 import eu.glitch.mywarehouse.ui.screens.record.AddEditRecordScreen
@@ -114,6 +115,24 @@ fun NavGraph(
         }
         composable(Destination.BarcodeScannerScreen.route) {
             BarcodeScannerScreen(navigationRouter = navigationRouter)
+        }
+
+
+        composable(Destination.AddEditChipScreen.route) {
+            AddEditChipScreen(navigationRouter, null)
+        }
+        composable(Destination.AddEditChipScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )) {
+            val id = it.arguments?.getLong("id")
+            AddEditChipScreen(
+                navigationRouter = navigationRouter,
+                id = id
+            )
         }
 
     }

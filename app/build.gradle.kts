@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.kotlin.reflect)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)
