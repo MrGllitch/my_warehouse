@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         val versionMajor = 1
-        val versionMinor = 0
+        val versionMinor = 1
         val versionPatch = 0
         val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
