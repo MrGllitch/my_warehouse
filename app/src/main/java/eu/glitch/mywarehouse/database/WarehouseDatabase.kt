@@ -38,7 +38,8 @@ abstract class WarehouseDatabase : RoomDatabase() {
                         INSTANCE = Room.databaseBuilder(
                             context.applicationContext,
                             WarehouseDatabase::class.java, "tasks_database"
-                        ).fallbackToDestructiveMigration().build()
+                        ) //.fallbackToDestructiveMigration()
+                    .build()
                     }
                 }
             }

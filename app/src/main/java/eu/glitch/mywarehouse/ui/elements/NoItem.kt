@@ -28,7 +28,7 @@ fun NoItem(paddingValues: PaddingValues, text: String) {
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
-            contentDescription = "",
+            contentDescription = "info_icon",
             modifier = Modifier.size(32.dp),
             tint = Color.Gray
         )

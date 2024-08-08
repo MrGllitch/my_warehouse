@@ -67,6 +67,7 @@ import eu.glitch.mywarehouse.ui.elements.AddEditRow
 import eu.glitch.mywarehouse.ui.elements.CameraView
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
+import eu.glitch.mywarehouse.ui.theme.surfaceLight
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -203,7 +204,7 @@ fun AddEditProductScreenContent(
             if (data.imageName == "") {
                 Image(
                     painter = painterResource(id = R.drawable.image_placeholder),
-                    contentDescription = "",
+                    contentDescription = "image_placeholder",
                     modifier = Modifier
                         .size(150.dp, 150.dp)
                 )
@@ -309,7 +310,9 @@ fun CreateChipDialog(
 
     if (isShown) {
         Dialog(onDismissRequest = { isShown = false }) {
-            Column {
+            Column(                modifier = Modifier
+                .background(surfaceLight)
+                .padding(20.dp)) {
                 TextFieldWError(
                     label = stringResource(R.string.chip_name),
                     value = data.chip.name,
