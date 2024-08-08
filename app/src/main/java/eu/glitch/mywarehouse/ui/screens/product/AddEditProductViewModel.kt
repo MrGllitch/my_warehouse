@@ -2,14 +2,18 @@ package eu.glitch.mywarehouse.ui.screens.product
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import eu.glitch.mywarehouse.database.chip.ILocalChipRepository
 import eu.glitch.mywarehouse.database.product.ILocalProductRepository
 import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
+import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
+import eu.glitch.mywarehouse.model.ProductChipCrossRef
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,6 +28,8 @@ import javax.inject.Inject
 class AddEditProductViewModel @Inject constructor(
     private val productRepository: ILocalProductRepository,
     private val typeRepository: ILocalTypeRepository,
+    private val unitRepository: ILocalUnitRepository,
+    private val chipRepository: ILocalChipRepository,
     @ApplicationContext val context: Context
 ) : ViewModel(), AddEditProductActions {
 
@@ -50,6 +56,13 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
 
+    override fun unitChanged(id: Long) {
+        data.product.unitId = id
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
+    }
+
     override fun photoChanged(uri: Uri) {
     }
 
@@ -70,8 +83,17 @@ class AddEditProductViewModel @Inject constructor(
         } else {
             data.nameError = null
         }
-        if (data.product.typeId == null || data.product.typeId <= 0) {
+        if (data.product.typeId.toInt() == 0) {
             data.typeError = "You have to select type"
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
+            }
+            return
+        } else {
+            data.typeError = null
+        }
+        if (data.product.unitId.toInt() == 0) {
+            data.unitError = "You have to select unit"
             _addEditProductUIState.update {
                 AddEditProductUIState.ProductStateChanged(data)
             }
@@ -82,11 +104,19 @@ class AddEditProductViewModel @Inject constructor(
         data.product.imageName = data.imageName
         if (data.product.id == null) {
             viewModelScope.launch {
-                productRepository.insertProduct(data.product)
+                val id = productRepository.insertProduct(data.product)
+                data.productChips.forEach {
+                    productRepository.insertProductChipCrossRef(
+                        ProductChipCrossRef(
+                            productId = id,
+                            chipId = it
+                        )
+                    )
+                }
             }
         } else {
             viewModelScope.launch {
-                productRepository.updateProduct(data.product)
+                productRepository.updateProductWithChips(data.product, data.productChips)
             }
         }
 
@@ -109,6 +139,8 @@ class AddEditProductViewModel @Inject constructor(
 
         viewModelScope.launch {
             data.product = productRepository.getProduct(id)
+            data.productChips =
+                productRepository.getChipIdsForProduct(data.product.id!!).toMutableList()
         }
         data.imageName = data.product.imageName.toString()
         _addEditProductUIState.update {
@@ -127,6 +159,28 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
 
+    fun loadUnits() {
+        viewModelScope.launch {
+            unitRepository.getUnits().collect() {
+                data.units = it.toMutableList()
+                _addEditProductUIState.update {
+                    AddEditProductUIState.ProductStateChanged(data)
+                }
+            }
+        }
+    }
+
+    fun loadChips() {
+        viewModelScope.launch {
+            chipRepository.getChips().collect() {
+                data.chips = it.toMutableList()
+                Log.d("load", "loadChips: ${data.chips}")
+                _addEditProductUIState.update {
+                    AddEditProductUIState.ProductStateChanged(data)
+                }
+            }
+        }
+    }
 
     override fun takePhoto(
         imageCapture: ImageCapture,
@@ -172,6 +226,58 @@ class AddEditProductViewModel @Inject constructor(
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }
+    }
+
+
+    override fun chipsChanged(id: Long) {
+        val chipId = data.productChips.find { it == id }
+        if (chipId != null) {
+            data.productChips.remove(chipId)
+        } else {
+            data.productChips.add(id)
+        }
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
+    }
+
+    override fun chipChanged(text: String) {
+        data.chip.name = text
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
+    }
+
+    override fun addChip(): Boolean {
+        if (data.chip.name.isEmpty()) {
+            data.chipError = "Name cannot be empty"
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
+            }
+            return false
+        } else {
+            data.chipError = null
+        }
+        if (data.chip.name.length <= 2) {
+            data.chipError = "Name has to be at least 3 letters long"
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
+            }
+            return false
+        } else {
+            data.chipError = null
+        }
+
+
+
+        viewModelScope.launch {
+            val chipId = chipRepository.insertChip(data.chip)
+            chipsChanged(chipId)
+            data.chip.name = ""
+            loadChips()
+
+        }
+        return true
     }
 
 }

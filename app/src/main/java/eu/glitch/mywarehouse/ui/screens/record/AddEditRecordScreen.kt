@@ -1,7 +1,6 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
 import android.util.Log
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,22 +10,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -39,14 +33,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +52,7 @@ import eu.glitch.mywarehouse.extensions.getValue
 import eu.glitch.mywarehouse.model.Barcode
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.ui.elements.AddEditRow
+import eu.glitch.mywarehouse.ui.theme.primaryLight
 import eu.glitch.mywarehouse.utils.DateUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,6 +98,7 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
             AddEditRecordUIState.Success -> {
                 LaunchedEffect(it) {
                     navigationRouter.returnBack()
+                    Log.d("TAG", "returning back")
                 }
             }
         }
@@ -161,14 +155,13 @@ fun AddEditProductScreenContent(
             mutableStateOf(false)
         }
         val selectedProduct = data.products.find {
-            it.id.toString() == (data.record.productId ?: null)
+            it.id == (data.record.productId)
         }
-        var isUnitExpanded by remember {
-            mutableStateOf(false)
+        val unit = data.units.find {
+            it.id == selectedProduct?.unitId
         }
-        val selectedUnit = data.units.find {
-            it.id.toString() == (data.record.unitId ?: null)
-        }
+
+
 
         Column {
             Row(modifier = Modifier.clickable { isProductExpanded = !isProductExpanded }) {
@@ -217,59 +210,25 @@ fun AddEditProductScreenContent(
             Text(text = data.productError!!, color = Color.Red)
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(180.dp),
-                value = data.record.quantity,
-                onValueChange = { actions.quantityChanged(it) },
-                label = {
-                    Text(
-                        text = stringResource(R.string.quantity)
-                    )
-                },
-                isError = data.quantityError != null,
-                supportingText = {
-                    if (data.quantityError != null) {
-                        Text(text = data.quantityError!!)
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            Column {
-                Row(modifier = Modifier
-                    .clickable { isUnitExpanded = !isUnitExpanded }
-                    .padding(16.dp)
-                    .fillMaxWidth()) {
-                    Text(
-                        text = selectedUnit?.name ?: stringResource(R.string.unit),
-                        fontSize = 22.sp
-                    )
-                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "")
+
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = data.record.quantity.toString(),
+            onValueChange = { actions.quantityChanged(it) },
+            label = { Text(text = stringResource(R.string.quantity)) },
+            trailingIcon = {
+                if (unit != null) {
+                    Text(text = unit.shortcut)
                 }
-                if (data.unitError != null) {
-                    Text(text = data.unitError!!, color = Color.Red)
+            },
+            isError = data.quantityError != null,
+            supportingText = {
+                if (data.quantityError != null) {
+                    Text(text = data.quantityError!!)
                 }
+            })
 
-                DropdownMenu(
-                    expanded = isUnitExpanded,
-                    onDismissRequest = { isUnitExpanded = false }) {
-                    data.units.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.name) },
-                            onClick = {
-                                actions.unitChanged(it.id.toString())
-                                isUnitExpanded = false
-                            })
-
-                    }
-
-                }
-            }
-
-        }
         Slider(
             modifier = Modifier.padding(horizontal = 30.dp),
             value = data.record.quantity.toFloat(),
@@ -277,71 +236,49 @@ fun AddEditProductScreenContent(
             valueRange = 0f..100f,
             steps = 99
         )
-        Spacer(modifier = Modifier.height(32.dp))
 
         val state =
-            rememberDatePickerState(initialSelectedDateMillis = data.record.dateTo.toLongOrNull())
-        var isDatePickerVisible by remember {
-            mutableStateOf(false)
+            rememberDatePickerState(
+                initialSelectedDateMillis = System.currentTimeMillis(),
+                initialDisplayMode = DisplayMode.Input
+            )
+
+        LaunchedEffect(state.selectedDateMillis) {
+            state.selectedDateMillis?.let { selectedDate ->
+                actions.dateToChanged(selectedDate.toString())
+            }
         }
 
-        Row(modifier = Modifier
-
-            .clickable { isDatePickerVisible = !isDatePickerVisible }
-            .border( // Outline
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-
+        LazyColumn(
+            modifier = Modifier
+                .height(500.dp)
+                .padding(8.dp)
 
         ) {
-            Column {
-                if (data.record.dateTo != "") {
-                    Text(
-                        text = DateUtils.getDateString(data.record.dateTo.toLong()),
-                        fontSize = 18.sp
-                    )
-                } else {
-                    Text(text = stringResource(R.string.select_a_date), fontSize = 18.sp)
-                }
-                if (data.dateError != null) {
-                    Text(text = data.dateError!!, color = Color.Red)
-                }
+            item {
+                DatePicker(
+                    modifier = Modifier,
+                    state = state,
+                    title = {
+                        Text(
+                            stringResource(R.string.best_before),
+                            fontSize = 28.sp,
+                            color = primaryLight
+                        )
+                    },
+                    headline = { Text(text = DateUtils.getDateString(data.record.dateTo)) },
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(imageVector = Icons.Default.DateRange, contentDescription = "")
         }
 
-        if (isDatePickerVisible)
-            DatePickerDialog(
-                onDismissRequest = {
-                    isDatePickerVisible = false
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        if (state.selectedDateMillis != null) {
-                            actions.dateToChanged(state.selectedDateMillis!!.toString())
-                            isDatePickerVisible = false
-                        }
-                    }) {
-                        Text(text = stringResource(R.string.select))
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { isDatePickerVisible = false }) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                }
 
 
-            ) {
-                DatePicker(state = state)
-            }
 
 
-        Spacer(modifier = Modifier.weight(1.0f))
+
+
+
+        Spacer(modifier = Modifier.weight(1f))
         AddEditRow(
             name = stringResource(R.string.record),
             id = data.record.id,

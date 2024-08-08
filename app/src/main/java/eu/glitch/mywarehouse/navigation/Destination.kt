@@ -15,5 +15,6 @@ sealed class Destination(val route: String) {
 
     object BarcodeScannerScreen : Destination("barcode_scanner")
 
+    object AddEditChipScreen : Destination("add_edit_chip")
 
 }

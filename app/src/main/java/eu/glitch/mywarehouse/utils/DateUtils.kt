@@ -8,8 +8,8 @@ class DateUtils {
 
     companion object {
 
-        private val DATE_FORMAT_CZ = "dd. MM. yyyy"
-        private val DATE_FORMAT_EN = "yyyy/MM/dd"
+        private val DATE_FORMAT_CZ = "dd.MM.yyyy"
+        private val DATE_FORMAT_EN = "MM/dd/yyyy"
 
 
         fun getDateString(date: Long): String {

@@ -10,7 +10,6 @@ import eu.glitch.mywarehouse.database.product.ILocalProductRepository
 import eu.glitch.mywarehouse.database.record.ILocalRecordRepository
 import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
 import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
-import eu.glitch.mywarehouse.model.Record
 import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,38 +35,23 @@ class AddEditRecordViewModel @Inject constructor(
 
 
     override fun productChanged(id: String) {
-        data.record.productId = id
-        val type = types.find { it.id == id.toLong() }
-        data.record.typeId = type?.id.toString()
+        data.record.productId = id.toLong()
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
     }
 
-    override fun unitChanged(id: String) {
-        data.record.unitId = id
-        _addEditRecordUIState.update {
-            AddEditRecordUIState.RecordDataChanged(data)
-        }
-    }
 
     override fun quantityChanged(quantity: String) {
         val newQuantity = quantity.toIntOrNull() ?: 0
-        data.record.quantity = newQuantity.coerceAtLeast(0).toString()
-        _addEditRecordUIState.update {
-            AddEditRecordUIState.RecordDataChanged(data)
-        }
-    }
-
-    override fun dateFromChanged(dateFrom: String) {
-        data.record.dateFrom = dateFrom
+        data.record.quantity = newQuantity.coerceAtLeast(0)
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
     }
 
     override fun dateToChanged(dateTo: String) {
-        data.record.dateTo = dateTo
+        data.record.dateTo = dateTo.toLong()
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
@@ -84,18 +68,8 @@ class AddEditRecordViewModel @Inject constructor(
         }
     }
 
-    private fun isPositiveLong(str: String): Boolean {
-        return try {
-            val longValue = str.toLong()
-            longValue > 0
-            true
-        } catch (e: NumberFormatException) {
-            false
-        }
-    }
-
     override fun addEditRecord() {
-        if (!isPositiveLong(data.record.productId)) {
+        if (data.record.productId.toInt() == 0) {
             data.productError = "You have to select product"
             _addEditRecordUIState.update {
                 AddEditRecordUIState.RecordDataChanged(data)
@@ -104,16 +78,7 @@ class AddEditRecordViewModel @Inject constructor(
         } else {
             data.productError = null
         }
-        if (!isPositiveLong(data.record.unitId)) {
-            data.unitError = "You have to select unit"
-            _addEditRecordUIState.update {
-                AddEditRecordUIState.RecordDataChanged(data)
-            }
-            return
-        } else {
-            data.unitError = null
-        }
-        if (data.record.quantity == "0") {
+        if (data.record.quantity == 0) {
             data.quantityError = "Number must be greater than 0"
             _addEditRecordUIState.update {
                 AddEditRecordUIState.RecordDataChanged(data)
@@ -123,35 +88,22 @@ class AddEditRecordViewModel @Inject constructor(
             data.quantityError = null
         }
 
-        //if creating new item set current time if edditing use that last
-        val currentMillis = if (data.record.dateFrom != null) {
-            data.record.dateFrom!!.toLong()
-        } else {
-            System.currentTimeMillis()
-        }
-
-
-        var newRecord = Record(
-            id = null,
-            productId = data.record.productId.toLong(),
-            unitId = data.record.unitId.toLong(),
-            typeId = data.record.typeId.toLong(),
-            quantity = data.record.quantity.toInt(),
-            startQuantity = data.record.quantity.toInt(),
-            dateFrom = currentMillis,
-            dateTo = data.record.dateTo.toLong()
-        )
         if (data.record.id == null) {
-            viewModelScope.launch {
-                recordRepository.insertRecord(newRecord)
-            }
-        } else {
-            viewModelScope.launch {
-                recordRepository.updateRecord(newRecord)
-            }
+            data.record.dateFrom = System.currentTimeMillis()
         }
-        _addEditRecordUIState.update {
-            AddEditRecordUIState.Success
+
+        data.record.startQuantity = data.record.quantity
+
+        viewModelScope.launch {
+            if (data.record.id == null) {
+                recordRepository.insertRecord(data.record)
+            } else {
+
+                recordRepository.updateRecord(data.record)
+            }
+            _addEditRecordUIState.update {
+                AddEditRecordUIState.Success
+            }
         }
     }
 

@@ -18,7 +18,8 @@ fun TextFieldWError(
     error: String?,
     keyboardNumber: Boolean = false,
     readOnly: Boolean = false,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -39,6 +40,7 @@ fun TextFieldWError(
             keyboardType = KeyboardType.Text
         ),
         readOnly = readOnly,
-        trailingIcon = trailingIcon ?: trailingIcon
+        trailingIcon = trailingIcon ?: trailingIcon,
+        prefix = prefix ?: prefix
     )
 }

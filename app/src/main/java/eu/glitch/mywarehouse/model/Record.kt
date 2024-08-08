@@ -15,20 +15,8 @@ import androidx.room.PrimaryKey
             childColumns = ["product_id"],
             onDelete = ForeignKey.CASCADE
         ),
-        ForeignKey(
-            entity = WarehouseUnit::class,
-            parentColumns = ["u_id"],
-            childColumns = ["unit_id"],
-            onDelete = ForeignKey.SET_NULL
-        ),
-        ForeignKey(
-            entity = Type::class,
-            parentColumns = ["t_id"],
-            childColumns = ["type_id"],
-            onDelete = ForeignKey.SET_NULL
-        ),
     ],
-    indices = [Index(value = ["product_id", "unit_id"])]
+    indices = [Index(value = ["product_id"])]
 )
 data class Record(
     @PrimaryKey(autoGenerate = true)
@@ -36,10 +24,6 @@ data class Record(
     var id: Long? = null,
     @ColumnInfo(name = "product_id")
     var productId: Long,
-    @ColumnInfo(name = "unit_id")
-    var unitId: Long? = 0,
-    @ColumnInfo(name = "type_id")
-    var typeId: Long? = 0,
 
     var startQuantity: Int = 0,
     var quantity: Int = 0,
@@ -49,4 +33,4 @@ data class Record(
     var dateFrom: Long,
     @ColumnInfo(name = "date_to")
     var dateTo: Long
-) {}
+)

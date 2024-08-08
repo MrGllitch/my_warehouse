@@ -19,6 +19,8 @@ interface INavigationRouter {
     fun navigateToAddEditUnitScreen(id: Long?)
     fun navigateToUnitListScreen()
 
+    fun navigateToAddEditChipScreen(id: Long?)
+
     fun navigateToDestination(destination: Destination)
     fun getCurrentRoute(): String?
 

@@ -56,4 +56,7 @@
     <string name="error_product_not_found">Chyba, produkt nenalezen</string>
     <string name="product_set">Produkt nastaven</string>
     <string name="select_icon">Vybrat ikonu</string>
+    <string name="chip_name">Jmeno Záložky</string>
+    <string name="tag">Záložka</string>
+    <string name="no_tags">Žádné záložky</string>
 </resources>

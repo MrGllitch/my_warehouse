@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         val versionMajor = 1
-        val versionMinor = 0
-        val versionPatch = 0
+        val versionMinor = 1
+        val versionPatch = 3
         val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
         applicationId = "eu.glitch.mywarehouse"
@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.kotlin.reflect)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

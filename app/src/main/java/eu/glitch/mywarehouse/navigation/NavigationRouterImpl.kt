@@ -74,6 +74,14 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         navController.navigate(Destination.UnitListScreen.route)
     }
 
+    override fun navigateToAddEditChipScreen(id: Long?) {
+        if (id == null) {
+            navController.navigate(Destination.AddEditChipScreen.route)
+        } else {
+            navController.navigate(Destination.AddEditChipScreen.route + "/" + id)
+        }
+    }
+
     override fun navigateToDestination(destination: Destination) {
         navController.navigate(destination.route)
     }
