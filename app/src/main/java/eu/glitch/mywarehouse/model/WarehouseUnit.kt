@@ -12,4 +12,7 @@ data class WarehouseUnit(
 
     var name: String,
     var shortcut: String
-)
+){
+    constructor() : this(null, "", "")
+}
+

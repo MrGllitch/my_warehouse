@@ -21,6 +21,8 @@ interface INavigationRouter {
 
     fun navigateToAddEditChipScreen(id: Long?)
 
+    fun navigateToSettingsScreen()
+
     fun navigateToDestination(destination: Destination)
     fun getCurrentRoute(): String?
 

@@ -3,6 +3,7 @@ package eu.glitch.mywarehouse.ui.screens.unit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import eu.glitch.mywarehouse.database.Repository
 import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UnitListViewModel @Inject constructor(
-    private val unitRepository: ILocalUnitRepository
+    private val repository: Repository
 ) : ViewModel(), UnitListActions {
 
     var data: UnitListData = UnitListData()
@@ -23,8 +24,7 @@ class UnitListViewModel @Inject constructor(
 
     override fun loadUnits() {
         viewModelScope.launch {
-            unitRepository.getUnits().collect {
-                data.units = it.toMutableList()
+            data.units = repository.getUnits().toMutableList()
                 _unitListUIState.update {
                     UnitListUIState.UnitStateChanged(data)
                 }
@@ -33,4 +33,3 @@ class UnitListViewModel @Inject constructor(
         }
 
     }
-}

@@ -3,6 +3,7 @@ package eu.glitch.mywarehouse.ui.screens.unit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import eu.glitch.mywarehouse.database.Repository
 import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditUnitViewModel @Inject constructor(
-    private val unitRepository: ILocalUnitRepository
+    private val repository: Repository
 ) : ViewModel(), AddEditUnitActions {
 
     var data: AddEditUnitData = AddEditUnitData()
@@ -57,11 +58,11 @@ class AddEditUnitViewModel @Inject constructor(
         }
         if (data.unit.id == null) {
             viewModelScope.launch {
-                unitRepository.insertUnit(data.unit)
+                repository.insertUnit(data.unit)
             }
         } else {
             viewModelScope.launch {
-                unitRepository.updateUnit(unit = data.unit)
+               // unitRepository.updateUnit(unit = data.unit)
             }
         }
 
@@ -72,7 +73,7 @@ class AddEditUnitViewModel @Inject constructor(
 
     override fun loadUnit(id: Long) {
         viewModelScope.launch {
-            data.unit = unitRepository.getUnit(id)
+           // data.unit = unitRepository.getUnit(id)
         }
         _addEditProductUIState.update {
             AddEditUnitUIState.UnitStateChanged(data)
@@ -81,7 +82,7 @@ class AddEditUnitViewModel @Inject constructor(
 
     override fun deleteUnit() {
         viewModelScope.launch {
-            unitRepository.deleteUnit(data.unit)
+           // unitRepository.deleteUnit(data.unit)
         }
         _addEditProductUIState.update {
             AddEditUnitUIState.Success

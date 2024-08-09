@@ -14,6 +14,7 @@ sealed class Destination(val route: String) {
     object UnitListScreen : Destination("unit_list_screen")
 
     object BarcodeScannerScreen : Destination("barcode_scanner")
+    object SettingsScreen : Destination("settings")
 
     object AddEditChipScreen : Destination("add_edit_chip")
 

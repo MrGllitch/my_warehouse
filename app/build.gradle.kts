@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.com.google.dagger.hilt.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -12,7 +13,7 @@ android {
     defaultConfig {
         val versionMajor = 1
         val versionMinor = 1
-        val versionPatch = 3
+        val versionPatch = 4
         val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
         applicationId = "eu.glitch.mywarehouse"
@@ -86,6 +87,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.kotlin.reflect)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

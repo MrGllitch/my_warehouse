@@ -2,12 +2,14 @@ package eu.glitch.mywarehouse.database.unit
 
 import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LocalUnitRepositoryImpl @Inject constructor(private val unitDao: UnitDao) :
     ILocalUnitRepository {
     override fun getUnits(): Flow<List<WarehouseUnit>> {
-        return unitDao.getAllUnits()
+        //return unitDao.getAllUnits()
+        return flow {  }
     }
 
     override suspend fun getUnitsSize(): Int {

@@ -3,9 +3,12 @@ package eu.glitch.mywarehouse.navigation
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -77,11 +80,19 @@ fun NavigationDrawer(
 
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         ModalDrawerSheet {
-            Text(
-                text = stringResource(R.string.app_name),
-                modifier = Modifier.padding(16.dp),
-                fontFamily = displayFontFamily
-            )
+            Row {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    modifier = Modifier.padding(16.dp),
+                    fontFamily = displayFontFamily
+                )
+                Spacer(modifier = Modifier.weight(1.0f))
+                IconButton(onClick = { navigationRouter.navigateToSettingsScreen() }) {
+                    Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "account")
+                }
+
+            }
+
             HorizontalDivider()
             items.forEachIndexed { index, item ->
                 androidx.compose.material3.NavigationDrawerItem(
@@ -115,6 +126,7 @@ fun NavigationDrawer(
             Spacer(modifier = Modifier.weight(1.0f))
             HorizontalDivider()
             Row {
+
                 Spacer(modifier = Modifier.weight(1.0f))
                 Text(
                     text = stringResource(R.string.version) + " " + versionName,
