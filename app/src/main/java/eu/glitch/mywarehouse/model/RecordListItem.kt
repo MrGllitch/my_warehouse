@@ -7,7 +7,7 @@ data class RecordListItem(
     @Embedded val record: Record,
     var name: String,
     var shortcut: String,
-    var typeId: Long,
-    var chipIds: List<Long>,
+    var typeId: String,
+    var chipIds: List<String>,
     var iconRoute: String,
 )

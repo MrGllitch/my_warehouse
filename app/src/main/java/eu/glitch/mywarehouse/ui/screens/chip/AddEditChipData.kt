@@ -4,7 +4,7 @@ import eu.glitch.mywarehouse.model.Chip
 
 class AddEditChipData {
     var chips: MutableList<Chip> = mutableListOf()
-    var chip = Chip(null, "")
+    var chip = Chip("", "")
     var isAddEditOpen: Boolean = false
 
     var nameError: String? = null

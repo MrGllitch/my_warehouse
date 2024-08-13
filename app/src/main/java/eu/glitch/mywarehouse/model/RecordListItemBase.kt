@@ -7,6 +7,6 @@ data class RecordListItemBase(
     @Embedded val record: Record,
     var name: String,
     var shortcut: String,
-    var typeId: Long,
+    var typeId: String,
     var iconRoute: String,
 )

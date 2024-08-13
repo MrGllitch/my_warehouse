@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditChipScreen(navigationRouter: INavigationRouter, id: Long?) {
+fun AddEditChipScreen(navigationRouter: INavigationRouter, id: String?) {
     val viewModel = hiltViewModel<AddEditChipViewModel>()
 
     var data by remember {
@@ -184,7 +184,7 @@ fun CreateChipDialog(
                         Text(text = stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    if (data.chip.id != null) {
+                    if (data.chip.id != "") {
                         OutlinedButton(modifier = Modifier, onClick = {
                             actions.deleteChip()
                             actions.isAddEditOpen(false)
@@ -201,7 +201,7 @@ fun CreateChipDialog(
                         }
                     }) {
                         Text(
-                            text = if (data.chip.id != null) {
+                            text = if (data.chip.id != "") {
                                 stringResource(R.string.submit)
                             } else {
                                 stringResource(R.string.add)

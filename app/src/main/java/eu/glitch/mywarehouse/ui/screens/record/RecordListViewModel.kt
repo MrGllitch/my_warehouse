@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import eu.glitch.mywarehouse.database.chip.ILocalChipRepository
-import eu.glitch.mywarehouse.database.record.ILocalRecordRepository
-import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
+import eu.glitch.mywarehouse.database.IRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
+
 import eu.glitch.mywarehouse.model.RecordListItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,9 +17,7 @@ import kotlin.reflect.full.memberProperties
 
 @HiltViewModel
 class RecordListViewModel @Inject constructor(
-    private val recordRepository: ILocalRecordRepository,
-    private val typeRepository: ILocalTypeRepository,
-    private val chipRepository: ILocalChipRepository
+    private val repository: RepositoryImpl
 ) : ViewModel(), RecordListActions {
     var data: RecordListData = RecordListData()
 
@@ -36,7 +34,7 @@ class RecordListViewModel @Inject constructor(
             Log.e("invalid number", "cannot convert ${data.tempQuantityChange} to int")
         }
         viewModelScope.launch {
-            recordRepository.updateRecord(data.editRecord!!)
+            repository.updateRecord(data.editRecord!!)
             loadRecords()
         }
     }
@@ -58,7 +56,7 @@ class RecordListViewModel @Inject constructor(
         }
     }
 
-    override fun editFilter(name: String, id: Long, add: Boolean) {
+    override fun editFilter(name: String, id: String, add: Boolean) {
 
         if (data.filters.containsKey(key = name)) {
             //if there is already key with name
@@ -126,9 +124,7 @@ class RecordListViewModel @Inject constructor(
 
     fun loadRecords() {
         viewModelScope.launch {
-            recordRepository.getRecordListItems().collect {
-                data.records = it.toMutableList()
-            }
+            data.records = repository.getRecordListItems().toMutableList()
             val filteredList = data.records.filter { it.record.quantity > 0 }
             data.records = filteredList.toMutableList()
 
@@ -142,25 +138,25 @@ class RecordListViewModel @Inject constructor(
 
     fun loadTypes() {
         viewModelScope.launch {
-            typeRepository.getTypes().collect {
-                data.types = it.toMutableList()
+            data.types = repository.getTypes().toMutableList()
+
 
                 _recordListUIState.update {
                     RecordListUIState.RecordListChanged(data)
                 }
-            }
+
         }
     }
 
     fun loadChips() {
         viewModelScope.launch {
-            chipRepository.getChips().collect {
-                data.chips = it.toMutableList()
+            data.chips = repository.getChips().toMutableList()
+
 
                 _recordListUIState.update {
                     RecordListUIState.RecordListChanged(data)
                 }
             }
-        }
+
     }
 }

@@ -11,7 +11,7 @@ class RecordListData {
     var types: MutableList<Type> = mutableListOf()
     var chips: MutableList<Chip> = mutableListOf()
 
-    var filters: MutableMap<String, MutableList<Long>> = mutableMapOf()
+    var filters: MutableMap<String, MutableList<String>> = mutableMapOf()
 
 
     var editRecordName: String = ""

@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import eu.glitch.mywarehouse.database.product.ILocalProductRepository
-import eu.glitch.mywarehouse.database.record.ILocalRecordRepository
-import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
-import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import eu.glitch.mywarehouse.model.Type
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,10 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditRecordViewModel @Inject constructor(
-    private val recordRepository: ILocalRecordRepository,
-    private val productRepository: ILocalProductRepository,
-    private val unitRepository: ILocalUnitRepository,
-    private val typeRepository: ILocalTypeRepository,
+    private val repository: RepositoryImpl,
     @ApplicationContext private val context: Context,
 ) : ViewModel(), AddEditRecordActions {
 
@@ -35,7 +29,7 @@ class AddEditRecordViewModel @Inject constructor(
 
 
     override fun productChanged(id: String) {
-        data.record.productId = id.toLong()
+        data.record.productId = id
         _addEditRecordUIState.update {
             AddEditRecordUIState.RecordDataChanged(data)
         }
@@ -69,7 +63,7 @@ class AddEditRecordViewModel @Inject constructor(
     }
 
     override fun addEditRecord() {
-        if (data.record.productId.toInt() == 0) {
+        if (data.record.productId == "") {
             data.productError = "You have to select product"
             _addEditRecordUIState.update {
                 AddEditRecordUIState.RecordDataChanged(data)
@@ -88,18 +82,18 @@ class AddEditRecordViewModel @Inject constructor(
             data.quantityError = null
         }
 
-        if (data.record.id == null) {
+        if (data.record.id == "") {
             data.record.dateFrom = System.currentTimeMillis()
         }
 
         data.record.startQuantity = data.record.quantity
 
         viewModelScope.launch {
-            if (data.record.id == null) {
-                recordRepository.insertRecord(data.record)
+            if (data.record.id == "") {
+                repository.insertRecord(data.record)
             } else {
 
-                recordRepository.updateRecord(data.record)
+                repository.updateRecord(data.record)
             }
             _addEditRecordUIState.update {
                 AddEditRecordUIState.Success
@@ -110,11 +104,9 @@ class AddEditRecordViewModel @Inject constructor(
 
     fun loadProducts() {
         viewModelScope.launch {
-            productRepository.getProducts().collect() {
-                data.products = it.toMutableList()
-                _addEditRecordUIState.update {
-                    AddEditRecordUIState.RecordDataChanged(data)
-                }
+            data.products = repository.getProducts().toMutableList()
+            _addEditRecordUIState.update {
+                AddEditRecordUIState.RecordDataChanged(data)
             }
         }
     }
@@ -122,25 +114,26 @@ class AddEditRecordViewModel @Inject constructor(
 
     fun loadUnits() {
         viewModelScope.launch {
-            unitRepository.getUnits().collect() {
-                data.units = it.toMutableList()
-                _addEditRecordUIState.update {
-                    AddEditRecordUIState.RecordDataChanged(data)
-                }
+            data.units = repository.getUnits().toMutableList()
+            _addEditRecordUIState.update {
+                AddEditRecordUIState.RecordDataChanged(data)
             }
+
         }
     }
 
     fun loadTypes() {
         viewModelScope.launch {
-            typeRepository.getTypes().collect() {
-                types = it.toMutableList()
+            types = repository.getTypes().toMutableList()
+            _addEditRecordUIState.update {
+                AddEditRecordUIState.RecordDataChanged(data)
             }
         }
+
     }
 
-    fun loadRecord(id: Long) {
-        //todo this shit
+    fun loadRecord(id: String) {
+        //todo
     }
 
 }

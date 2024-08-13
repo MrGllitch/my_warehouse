@@ -72,18 +72,14 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     var isEmpty = false
 
 
-    LaunchedEffect(Unit) {
-        viewModel.loadRecords()
-        viewModel.loadTypes()
-        viewModel.loadChips()
-    }
+
 
     state.value.let {
         when (it) {
             is RecordListUIState.Loading -> {
-                // viewModel.loadRecords()
-                // viewModel.loadTypes()
-                // viewModel.loadChips()
+                 viewModel.loadRecords()
+                 viewModel.loadTypes()
+                 viewModel.loadChips()
             }
 
             is RecordListUIState.RecordListChanged -> {

@@ -19,11 +19,11 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["product_id"])]
 )
 data class Record(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "r_id")
-    var id: Long? = null,
+    var id: String = "",
     @ColumnInfo(name = "product_id")
-    var productId: Long,
+    var productId: String = "",
 
     var startQuantity: Int = 0,
     var quantity: Int = 0,
@@ -32,5 +32,7 @@ data class Record(
     @ColumnInfo(name = "date_from")
     var dateFrom: Long,
     @ColumnInfo(name = "date_to")
-    var dateTo: Long
-)
+    var dateTo: Long,
+){
+    constructor(): this("","",0,0,0,0)
+}

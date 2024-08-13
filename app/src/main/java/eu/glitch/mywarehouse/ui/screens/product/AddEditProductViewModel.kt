@@ -9,15 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import eu.glitch.mywarehouse.database.chip.ILocalChipRepository
-import eu.glitch.mywarehouse.database.product.ILocalProductRepository
-import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
-import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import eu.glitch.mywarehouse.model.ProductChipCrossRef
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -26,11 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditProductViewModel @Inject constructor(
-    private val productRepository: ILocalProductRepository,
-    private val typeRepository: ILocalTypeRepository,
-    private val unitRepository: ILocalUnitRepository,
-    private val chipRepository: ILocalChipRepository,
-    @ApplicationContext val context: Context
+    private val repository: RepositoryImpl, @ApplicationContext val context: Context
 ) : ViewModel(), AddEditProductActions {
 
 
@@ -49,14 +44,14 @@ class AddEditProductViewModel @Inject constructor(
     }
 
 
-    override fun typeChanged(id: Long) {
+    override fun typeChanged(id: String) {
         data.product.typeId = id
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
         }
     }
 
-    override fun unitChanged(id: Long) {
+    override fun unitChanged(id: String) {
         data.product.unitId = id
         _addEditProductUIState.update {
             AddEditProductUIState.ProductStateChanged(data)
@@ -83,7 +78,7 @@ class AddEditProductViewModel @Inject constructor(
         } else {
             data.nameError = null
         }
-        if (data.product.typeId.toInt() == 0) {
+        if (data.product.typeId == "") {
             data.typeError = "You have to select type"
             _addEditProductUIState.update {
                 AddEditProductUIState.ProductStateChanged(data)
@@ -92,7 +87,7 @@ class AddEditProductViewModel @Inject constructor(
         } else {
             data.typeError = null
         }
-        if (data.product.unitId.toInt() == 0) {
+        if (data.product.unitId == "") {
             data.unitError = "You have to select unit"
             _addEditProductUIState.update {
                 AddEditProductUIState.ProductStateChanged(data)
@@ -102,45 +97,44 @@ class AddEditProductViewModel @Inject constructor(
             data.typeError = null
         }
         data.product.imageName = data.imageName
-        if (data.product.id == null) {
-            viewModelScope.launch {
-                val id = productRepository.insertProduct(data.product)
-                data.productChips.forEach {
-                    productRepository.insertProductChipCrossRef(
-                        ProductChipCrossRef(
-                            productId = id,
-                            chipId = it
+        Log.e("insert product", "insert: calling ${data.product.id}")
+        viewModelScope.launch {
+            if (data.product.id == "") {
+                val id = repository.insertProduct(data.product)
+                withContext(Dispatchers.IO) {
+                    data.productChips.forEach {
+                        repository.insertProductChipCrossRef(
+                            ProductChipCrossRef(
+                                productId = id, chipId = it
+                            )
                         )
-                    )
+                    }
                 }
+            } else {
+                repository.updateProductWithChips(data.product, data.productChips)
             }
-        } else {
-            viewModelScope.launch {
-                productRepository.updateProductWithChips(data.product, data.productChips)
+            _addEditProductUIState.update {
+                AddEditProductUIState.Success
             }
-        }
-
-        _addEditProductUIState.update {
-            AddEditProductUIState.Success
         }
     }
 
     override fun deleteProduct() {
         removePhoto()
         viewModelScope.launch {
-            productRepository.deleteProduct(data.product)
+            repository.deleteProduct(data.product)
+            _addEditProductUIState.update {
+                AddEditProductUIState.Success
+            }
         }
-        _addEditProductUIState.update {
-            AddEditProductUIState.Success
-        }
+
     }
 
-    fun loadProduct(id: Long) {
-
+    fun loadProduct(id: String) {
         viewModelScope.launch {
-            data.product = productRepository.getProduct(id)
-            data.productChips =
-                productRepository.getChipIdsForProduct(data.product.id!!).toMutableList()
+            data.product = repository.getProduct(id)
+
+            data.productChips = repository.getChipIdsForProduct(data.product.id).toMutableList()
         }
         data.imageName = data.product.imageName.toString()
         _addEditProductUIState.update {
@@ -150,34 +144,29 @@ class AddEditProductViewModel @Inject constructor(
 
     fun loadTypes() {
         viewModelScope.launch {
-            typeRepository.getTypes().collect() {
-                data.types = it.toMutableList()
-                _addEditProductUIState.update {
-                    AddEditProductUIState.ProductStateChanged(data)
-                }
+            data.types = repository.getTypes().toMutableList()
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
             }
         }
     }
 
     fun loadUnits() {
         viewModelScope.launch {
-            unitRepository.getUnits().collect() {
-                data.units = it.toMutableList()
-                _addEditProductUIState.update {
-                    AddEditProductUIState.ProductStateChanged(data)
-                }
+            data.units = repository.getUnits().toMutableList()
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
             }
+
         }
     }
 
     fun loadChips() {
         viewModelScope.launch {
-            chipRepository.getChips().collect() {
-                data.chips = it.toMutableList()
-                Log.d("load", "loadChips: ${data.chips}")
-                _addEditProductUIState.update {
-                    AddEditProductUIState.ProductStateChanged(data)
-                }
+            data.chips = repository.getChips().toMutableList()
+            Log.d("load", "loadChips: ${data.chips}")
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
             }
         }
     }
@@ -190,19 +179,16 @@ class AddEditProductViewModel @Inject constructor(
         }
 
         var imageName = SimpleDateFormat(
-            "yyyy-MM-dd-HH-mm-ss-SSS",
-            Locale.GERMANY
+            "yyyy-MM-dd-HH-mm-ss-SSS", Locale.GERMANY
         ).format(System.currentTimeMillis()) + ".jpg"
 
         val photoFile = File(
-            context.filesDir,
-            imageName
+            context.filesDir, imageName
         )
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        imageCapture.takePicture(
-            outputOptions,
+        imageCapture.takePicture(outputOptions,
             Executors.newSingleThreadExecutor(),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
@@ -229,7 +215,7 @@ class AddEditProductViewModel @Inject constructor(
     }
 
 
-    override fun chipsChanged(id: Long) {
+    override fun chipsChanged(id: String) {
         val chipId = data.productChips.find { it == id }
         if (chipId != null) {
             data.productChips.remove(chipId)
@@ -271,7 +257,7 @@ class AddEditProductViewModel @Inject constructor(
 
 
         viewModelScope.launch {
-            val chipId = chipRepository.insertChip(data.chip)
+            val chipId = repository.insertChip(data.chip)
             chipsChanged(chipId)
             data.chip.name = ""
             loadChips()

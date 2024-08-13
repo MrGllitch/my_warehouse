@@ -6,9 +6,9 @@ import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 
 class AddEditProductData {
-    var product: Product = Product(null, 0, 0, "", "", "")
-    var productChips: MutableList<Long> = mutableListOf()
-    var chip = Chip(null, "")
+    var product: Product = Product("", "", "", "", "", "")
+    var productChips: MutableList<String> = mutableListOf()
+    var chip = Chip("", "")
 
     var types: MutableList<Type> = mutableListOf()
     var units: MutableList<WarehouseUnit> = mutableListOf()

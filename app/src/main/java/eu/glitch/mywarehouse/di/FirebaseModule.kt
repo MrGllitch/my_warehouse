@@ -10,8 +10,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import eu.glitch.mywarehouse.database.AccountServiceImpl
-import eu.glitch.mywarehouse.database.FirestoreRepositoryImpl
+import eu.glitch.mywarehouse.database.impl.AccountServiceImpl
+import eu.glitch.mywarehouse.database.impl.FirestoreRepositoryImpl
 import eu.glitch.mywarehouse.database.IAccountService
 import eu.glitch.mywarehouse.database.IRepository
 import javax.inject.Singleton

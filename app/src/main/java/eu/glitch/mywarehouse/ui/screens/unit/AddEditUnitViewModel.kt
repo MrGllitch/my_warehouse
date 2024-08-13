@@ -3,8 +3,7 @@ package eu.glitch.mywarehouse.ui.screens.unit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import eu.glitch.mywarehouse.database.Repository
-import eu.glitch.mywarehouse.database.unit.ILocalUnitRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditUnitViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: RepositoryImpl
 ) : ViewModel(), AddEditUnitActions {
 
     var data: AddEditUnitData = AddEditUnitData()
@@ -56,37 +55,40 @@ class AddEditUnitViewModel @Inject constructor(
         } else {
             data.unitError = null
         }
-        if (data.unit.id == null) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+
+            if (data.unit.id == "") {
                 repository.insertUnit(data.unit)
+            } else {
+                repository.updateUnit(data.unit)
             }
-        } else {
-            viewModelScope.launch {
-               // unitRepository.updateUnit(unit = data.unit)
+
+            _addEditProductUIState.update {
+                AddEditUnitUIState.Success
             }
         }
 
-        _addEditProductUIState.update {
-            AddEditUnitUIState.Success
-        }
     }
 
-    override fun loadUnit(id: Long) {
+    override fun loadUnit(id: String) {
         viewModelScope.launch {
-           // data.unit = unitRepository.getUnit(id)
+            data.unit = repository.getUnit(id)
+            _addEditProductUIState.update {
+                AddEditUnitUIState.UnitStateChanged(data)
+            }
         }
-        _addEditProductUIState.update {
-            AddEditUnitUIState.UnitStateChanged(data)
-        }
+
     }
 
     override fun deleteUnit() {
         viewModelScope.launch {
-           // unitRepository.deleteUnit(data.unit)
+            repository.deleteUnit(data.unit)
+            _addEditProductUIState.update {
+                AddEditUnitUIState.Success
+            }
+
         }
-        _addEditProductUIState.update {
-            AddEditUnitUIState.Success
-        }
+
     }
 
 }

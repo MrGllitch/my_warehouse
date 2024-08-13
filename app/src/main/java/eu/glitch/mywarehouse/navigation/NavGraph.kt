@@ -35,11 +35,11 @@ fun NavGraph(
         composable(Destination.AddEditProductScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
-                    type = NavType.LongType
-                    defaultValue = -1L
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )) {
-            val id = it.arguments?.getLong("id")
+            val id = it.arguments?.getString("id")
             AddEditProductScreen(
                 navigationRouter = navigationRouter,
                 id = id
@@ -57,11 +57,11 @@ fun NavGraph(
         composable(Destination.AddEditRecordScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
-                    type = NavType.LongType
-                    defaultValue = -1L
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )) {
-            val id = it.arguments?.getLong("id")
+            val id = it.arguments?.getString("id")
             AddEditRecordScreen(
                 navigationRouter = navigationRouter,
                 id = id
@@ -78,11 +78,11 @@ fun NavGraph(
         composable(Destination.AddEditTypeScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
-                    type = NavType.LongType
-                    defaultValue = -1L
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )) {
-            val id = it.arguments?.getLong("id")
+            val id = it.arguments?.getString("id")
             AddEditTypeScreen(
                 navigationRouter = navigationRouter,
                 id = id
@@ -99,11 +99,11 @@ fun NavGraph(
         composable(Destination.AddEditUnitScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
-                    type = NavType.LongType
-                    defaultValue = -1L
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )) {
-            val id = it.arguments?.getLong("id")
+            val id = it.arguments?.getString("id")
             AddEditUnitScreen(
                 navigationRouter = navigationRouter,
                 id = id
@@ -128,11 +128,11 @@ fun NavGraph(
         composable(Destination.AddEditChipScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
-                    type = NavType.LongType
-                    defaultValue = -1L
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )) {
-            val id = it.arguments?.getLong("id")
+            val id = it.arguments?.getString("id")
             AddEditChipScreen(
                 navigationRouter = navigationRouter,
                 id = id

@@ -7,10 +7,12 @@ import eu.glitch.mywarehouse.ui.elements.FilterItem
 
 @Entity(tableName = "types")
 data class Type(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "t_id")
-    override var id: Long? = null,
+    override var id: String = "",
 
     override var name: String,
     var iconRoute: String,
-) : FilterItem
+) : FilterItem {
+    constructor(): this("","", "")
+}

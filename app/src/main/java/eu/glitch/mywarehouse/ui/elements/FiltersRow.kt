@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 interface FilterItem {
-    val id: Long?
+    val id: String
     val name: String
 }
 
@@ -27,7 +27,7 @@ fun <E : FilterItem> FilterRow(
     modifier: Modifier = Modifier,
     items: List<E>,
     type: String,
-    onClick: (String, Long, Boolean) -> Unit
+    onClick: (String, String, Boolean) -> Unit
 
 ) {
     LazyRow(modifier = modifier) {
@@ -46,10 +46,10 @@ fun <E : FilterItem> FilterRow(
 
 @Composable
 private fun Filter(
-    id: Long,
+    id: String,
     type: String,
     name: String,
-    onClick: (String, Long, Boolean) -> Unit
+    onClick: (String, String, Boolean) -> Unit
 ) {
     var selected by remember { mutableStateOf(false) }
 

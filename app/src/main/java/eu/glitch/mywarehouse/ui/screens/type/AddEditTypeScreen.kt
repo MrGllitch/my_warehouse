@@ -34,7 +34,7 @@ import eu.glitch.mywarehouse.ui.elements.IconPicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditTypeScreen(navigationRouter: INavigationRouter, id: Long?) {
+fun AddEditTypeScreen(navigationRouter: INavigationRouter, id: String?) {
 
     val viewModel = hiltViewModel<AddEditTypeViewModel>()
 
@@ -59,7 +59,7 @@ fun AddEditTypeScreen(navigationRouter: INavigationRouter, id: Long?) {
 
             AddEditTypeUIState.Success -> {
                 LaunchedEffect(it) {
-                    navigationRouter.returnBack()
+                    navigationRouter.navigateToTypeListScreen()
                 }
             }
         }

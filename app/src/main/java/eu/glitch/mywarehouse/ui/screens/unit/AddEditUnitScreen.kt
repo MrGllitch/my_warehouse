@@ -30,7 +30,7 @@ import eu.glitch.mywarehouse.ui.elements.AddEditRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: Long?) {
+fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: String?) {
 
     val viewModel = hiltViewModel<AddEditUnitViewModel>()
 
@@ -56,7 +56,6 @@ fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: Long?) {
             AddEditUnitUIState.Success -> {
                 LaunchedEffect(it) {
                     navigationRouter.navigateToUnitListScreen()
-
                 }
             }
         }
@@ -73,8 +72,7 @@ fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: Long?) {
                 }
             )
         }, navigationIcon = {
-            IconButton(
-                onClick = { navigationRouter.returnBack() }) {
+            IconButton(onClick = { navigationRouter.returnBack() }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "close")
             }
         })
@@ -85,9 +83,7 @@ fun AddEditUnitScreen(navigationRouter: INavigationRouter, id: Long?) {
 
 @Composable
 fun AddEditProductScreenContent(
-    paddingValues: PaddingValues,
-    data: AddEditUnitData,
-    actions: AddEditUnitActions
+    paddingValues: PaddingValues, data: AddEditUnitData, actions: AddEditUnitActions
 ) {
     Column(
         modifier = Modifier
@@ -109,8 +105,7 @@ fun AddEditProductScreenContent(
                 if (data.nameError != null) {
                     Text(text = data.nameError!!)
                 }
-            }
-        )
+            })
 
         OutlinedTextField(value = data.unit.shortcut,
             onValueChange = { actions.shortCutChanged(it) },
@@ -124,14 +119,10 @@ fun AddEditProductScreenContent(
                 if (data.unitError != null) {
                     Text(text = data.unitError!!)
                 }
-            }
-        )
+            })
         Spacer(modifier = Modifier.weight(1.0f))
-        AddEditRow(
-            name = "Record",
-            id = data.unit.id,
-            onAddEdit = { actions.addEditUnit() },
-            onDelete = { actions.deleteUnit() })
+        AddEditRow(name = "Record", id = data.unit.id,
+            onAddEdit = { actions.addEditUnit() }, onDelete = { actions.deleteUnit() })
     }
 }
 

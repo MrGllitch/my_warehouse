@@ -5,13 +5,13 @@ import androidx.camera.core.ImageCapture
 
 interface AddEditProductActions {
     fun nameChanged(text: String)
-    fun typeChanged(id: Long)
-    fun unitChanged(id: Long)
+    fun typeChanged(id: String)
+    fun unitChanged(id: String)
     fun photoChanged(uri: Uri)
     fun barcodeChanged(barcode: String)
     fun takePhoto(imageCapture: ImageCapture)
     fun removePhoto()
-    fun chipsChanged(id: Long)
+    fun chipsChanged(id: String)
     fun chipChanged(text: String)
 
 

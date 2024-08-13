@@ -6,6 +6,6 @@ interface RecordListActions {
     //fun saveNameWLastName(lastName: String)
     fun quantityChanged(newQuantity: String)
     fun setEditedRecord(recordDetails: RecordListItem)
-    fun editFilter(name: String, id: Long, add: Boolean)
+    fun editFilter(name: String, id: String, add: Boolean)
     fun submitChanges()
 }

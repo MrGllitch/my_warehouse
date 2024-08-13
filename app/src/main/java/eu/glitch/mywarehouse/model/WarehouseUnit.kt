@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "units")
 data class WarehouseUnit(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "u_id")
-    var id: Long? = null,
+    var id: String= "",
 
-    var name: String,
-    var shortcut: String
+    var name: String ="",
+    var shortcut: String="",
 ){
-    constructor() : this(null, "", "")
+    constructor() : this("", "", "")
 }
 

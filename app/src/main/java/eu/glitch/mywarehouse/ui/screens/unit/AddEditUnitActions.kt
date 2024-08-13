@@ -5,6 +5,6 @@ interface AddEditUnitActions {
     fun nameChanged(text: String)
     fun shortCutChanged(text: String)
     fun addEditUnit()
-    fun loadUnit(id: Long)
+    fun loadUnit(id: String)
     fun deleteUnit()
 }

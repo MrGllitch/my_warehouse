@@ -6,14 +6,8 @@ import com.squareup.moshi.Moshi
 import eu.glitch.mywarehouse.model.Barcode
 
 class NavigationRouterImpl(private val navController: NavController) : INavigationRouter {
-    override fun navigateToAddEditProductScreen(id: Long?) {
-        if (id == null) {
-            navController.navigate(Destination.AddEditProductScreen.route)
-        } else {
-            navController.navigate(Destination.AddEditProductScreen.route + "/" + id)
-        }
-
-
+    override fun navigateToAddEditProductScreen(id: String?) {
+        decideRoute(Destination.AddEditProductScreen, id)
     }
 
     override fun navigateToProductListScreen() {
@@ -35,12 +29,8 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
     }
 
 
-    override fun navigateToAddEditRecordScreen(id: Long?) {
-        if (id == null) {
-            navController.navigate(Destination.AddEditRecordScreen.route)
-        } else {
-            navController.navigate(Destination.AddEditRecordScreen.route + "/" + id)
-        }
+    override fun navigateToAddEditRecordScreen(id: String?) {
+        decideRoute(Destination.AddEditRecordScreen, id)
 
     }
 
@@ -48,12 +38,8 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         navController.navigate(Destination.RecordListScreen.route)
     }
 
-    override fun navigateToAddEditTypeScreen(id: Long?) {
-        if (id == null) {
-            navController.navigate(Destination.AddEditTypeScreen.route)
-        } else {
-            navController.navigate(Destination.AddEditTypeScreen.route + "/" + id)
-        }
+    override fun navigateToAddEditTypeScreen(id: String?) {
+        decideRoute(Destination.AddEditTypeScreen, id)
 
     }
 
@@ -61,12 +47,8 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         navController.navigate(Destination.TypeListScreen.route)
     }
 
-    override fun navigateToAddEditUnitScreen(id: Long?) {
-        if (id == null) {
-            navController.navigate(Destination.AddEditUnitScreen.route)
-        } else {
-            navController.navigate(Destination.AddEditUnitScreen.route + "/" + id)
-        }
+    override fun navigateToAddEditUnitScreen(id: String?) {
+        decideRoute(Destination.AddEditUnitScreen, id)
 
     }
 
@@ -74,12 +56,8 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
         navController.navigate(Destination.UnitListScreen.route)
     }
 
-    override fun navigateToAddEditChipScreen(id: Long?) {
-        if (id == null) {
-            navController.navigate(Destination.AddEditChipScreen.route)
-        } else {
-            navController.navigate(Destination.AddEditChipScreen.route + "/" + id)
-        }
+    override fun navigateToAddEditChipScreen(id: String?) {
+        decideRoute(Destination.AddEditChipScreen, id)
     }
 
     override fun navigateToSettingsScreen() {
@@ -101,6 +79,14 @@ class NavigationRouterImpl(private val navController: NavController) : INavigati
 
     override fun returnBack() {
         navController.popBackStack()
+    }
+
+    private fun decideRoute(destination: Destination, id: String?){
+        if (id == "" || id == null) {
+            navController.navigate(destination.route)
+        } else {
+            navController.navigate(destination.route + "/" + id!!)
+        }
     }
 
 

@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import eu.glitch.mywarehouse.database.chip.ILocalChipRepository
+import eu.glitch.mywarehouse.database.IRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import eu.glitch.mywarehouse.model.Chip
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditChipViewModel @Inject constructor(
-    private val chipRepository: ILocalChipRepository,
+    private val repository: RepositoryImpl,
     @ApplicationContext val context: Context
 ) : ViewModel(), AddEditChipActions {
 
@@ -29,11 +30,10 @@ class AddEditChipViewModel @Inject constructor(
 
     fun loadChips() {
         viewModelScope.launch {
-            chipRepository.getChips().collect() {
-                data.chips = it.toMutableList()
+            data.chips = repository.getChips().toMutableList()
                 _addEditChipUIState.update {
                     AddEditChipUIState.ProductStateChanged(data)
-                }
+
             }
         }
     }
@@ -56,10 +56,10 @@ class AddEditChipViewModel @Inject constructor(
             data.nameError = null
         }
         viewModelScope.launch {
-            if (data.chip.id == null) {
-                chipRepository.insertChip(data.chip)
+            if (data.chip.id == "") {
+                repository.insertChip(data.chip)
             } else {
-                chipRepository.updateChip(data.chip)
+                repository.updateChip(data.chip)
             }
             loadChips()
         }
@@ -67,7 +67,7 @@ class AddEditChipViewModel @Inject constructor(
     }
 
     fun newChipCreation() {
-        data.chip = Chip(null, "")
+        data.chip = Chip("", "")
         _addEditChipUIState.update {
             AddEditChipUIState.ProductStateChanged(data)
         }
@@ -75,7 +75,7 @@ class AddEditChipViewModel @Inject constructor(
 
     override fun deleteChip() {
         viewModelScope.launch {
-            chipRepository.deleteChip(data.chip)
+            repository.deleteChip(data.chip)
             loadChips()
         }
         _addEditChipUIState.update {

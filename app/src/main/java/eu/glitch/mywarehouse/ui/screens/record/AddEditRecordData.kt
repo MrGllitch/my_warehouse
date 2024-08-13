@@ -5,7 +5,7 @@ import eu.glitch.mywarehouse.model.Record
 import eu.glitch.mywarehouse.model.WarehouseUnit
 
 class AddEditRecordData {
-    var record = Record(null, 0, 0, 0, 0, 0)
+    var record = Record("", "", 0, 0, 0, 0)
 
     var products: MutableList<Product> = mutableListOf()
 

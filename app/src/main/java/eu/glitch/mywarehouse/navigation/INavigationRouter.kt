@@ -3,23 +3,23 @@ package eu.glitch.mywarehouse.navigation
 import androidx.navigation.NavController
 
 interface INavigationRouter {
-    fun navigateToAddEditProductScreen(id: Long?)
+    fun navigateToAddEditProductScreen(id: String?)
     fun navigateToProductListScreen()
 
     fun navigateToBarcodeScannerScreen()
     fun navigateFromBarcodeScannerScreen(result: String)
 
 
-    fun navigateToAddEditRecordScreen(id: Long?)
+    fun navigateToAddEditRecordScreen(id: String?)
     fun navigateToRecordListScreen()
 
-    fun navigateToAddEditTypeScreen(id: Long?)
+    fun navigateToAddEditTypeScreen(id: String?)
     fun navigateToTypeListScreen()
 
-    fun navigateToAddEditUnitScreen(id: Long?)
+    fun navigateToAddEditUnitScreen(id: String?)
     fun navigateToUnitListScreen()
 
-    fun navigateToAddEditChipScreen(id: Long?)
+    fun navigateToAddEditChipScreen(id: String?)
 
     fun navigateToSettingsScreen()
 

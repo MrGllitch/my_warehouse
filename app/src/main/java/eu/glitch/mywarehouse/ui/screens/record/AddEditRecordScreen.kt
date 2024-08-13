@@ -57,7 +57,7 @@ import eu.glitch.mywarehouse.utils.DateUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
+fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: String?) {
 
     val viewModel = hiltViewModel<AddEditRecordViewModel>()
 
@@ -97,8 +97,7 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: Long?) {
 
             AddEditRecordUIState.Success -> {
                 LaunchedEffect(it) {
-                    navigationRouter.returnBack()
-                    Log.d("TAG", "returning back")
+                    navigationRouter.navigateToRecordListScreen()
                 }
             }
         }

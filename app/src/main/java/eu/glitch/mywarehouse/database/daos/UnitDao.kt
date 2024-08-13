@@ -1,4 +1,4 @@
-package eu.glitch.mywarehouse.database.unit
+package eu.glitch.mywarehouse.database.daos
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import eu.glitch.mywarehouse.model.WarehouseUnit
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UnitDao {
@@ -17,14 +16,14 @@ interface UnitDao {
     suspend fun getUnitsSize(): Int
 
     @Insert
-    suspend fun insertUnit(unit: WarehouseUnit): Long
+    suspend fun insertUnit(unit: WarehouseUnit)
 
     @Delete
     suspend fun deleteUnit(unit: WarehouseUnit)
 
     @Update
-    suspend fun updateUnit(unit: WarehouseUnit): Int
+    suspend fun updateUnit(unit: WarehouseUnit)
 
     @Query("SELECT * FROM units WHERE u_id = :id")
-    suspend fun getUnit(id: Long): WarehouseUnit
+    suspend fun getUnit(id: String): WarehouseUnit
 }

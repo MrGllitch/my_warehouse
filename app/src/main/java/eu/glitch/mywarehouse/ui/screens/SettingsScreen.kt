@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.R
+import eu.glitch.mywarehouse.database.impl.SyncStatus
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
@@ -42,6 +43,33 @@ fun SettingsScreen(navigationRouter: INavigationRouter) {
     var data by remember {
         mutableStateOf(SettingsData())
     }
+
+
+    val syncState = viewModel.syncStatus.collectAsStateWithLifecycle()
+    syncState.value.let { status ->
+        data.syncStatus = when (status) {
+            is SyncStatus.Syncing -> {
+                "Syncing..."
+            }
+
+            is SyncStatus.TableSyncing -> {
+                "Syncing ${status.tableName}..."
+            }
+
+            is SyncStatus.Success -> {
+                "Synced"
+            }
+
+            is SyncStatus.Error -> {
+                status.message
+            }
+
+            SyncStatus.Waiting -> {
+                "Sync Database"
+            }
+        }
+    }
+
 
     val state = viewModel.settingsUIState.collectAsStateWithLifecycle()
 
@@ -60,17 +88,18 @@ fun SettingsScreen(navigationRouter: INavigationRouter) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     NavigationDrawer(drawerState = drawerState, navigationRouter = navigationRouter, content = {
-        Scaffold(topBar = {
-            TopAppBar(title = { Text(text = "Profile") },
-                navigationIcon = {
-                    val coroutineScope = rememberCoroutineScope()
-                    IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
-                    }
-                })
-        },
+        Scaffold(
+            topBar = {
+                TopAppBar(title = { Text(text = "Profile") },
+                    navigationIcon = {
+                        val coroutineScope = rememberCoroutineScope()
+                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                            Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
+                        }
+                    })
+            },
 
-        ) {
+            ) {
             SettingsScreenContent(
                 paddingValues = it, actions = viewModel, data = data
             )
@@ -86,7 +115,7 @@ fun SettingsScreenContent(
     data: SettingsData
 ) {
     Column(modifier = Modifier.padding(paddingValues = paddingValues)) {
-        if (data.user == null){
+        if (data.user == null) {
             TextFieldWError(label = "email", value = data.email, onValueChanged = {
                 actions.emailChanged(
                     it
@@ -98,21 +127,24 @@ fun SettingsScreenContent(
                 onValueChanged = { actions.passwordChanged(it) },
                 error = data.passwordError
             )
-            if (data.invalidCredentials != null){
+            if (data.invalidCredentials != null) {
                 Text(text = data.invalidCredentials!!)
             }
             Button(onClick = { actions.login() }) {
                 Text(text = "Login")
             }
-        }else{
+        } else {
 
-                Text(text = "Logged in as ${data.user!!.email}")
-                Text(text = "Premium: ${data.user!!.hasPremium}")
+            Text(text = "Logged in as ${data.user!!.email}")
+            Text(text = "Premium: ${data.user!!.hasPremium}")
 
+            
             Button(onClick = { actions.logout() }) {
                 Text(text = "log out")
             }
+            Button(onClick = { actions.syncData() }) {
+                Text(text = if (data.syncStatus == null){"sync"}else{data.syncStatus!! })
+            }
         }
     }
-
 }

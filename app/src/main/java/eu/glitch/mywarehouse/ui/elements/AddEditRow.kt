@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,7 +23,7 @@ import eu.glitch.mywarehouse.R
 @Composable
 fun AddEditRow(
     name: String?,
-    id: Long?,
+    id: String?,
     onAddEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -30,16 +31,17 @@ fun AddEditRow(
         mutableStateOf(false)
     }
     Row(modifier = Modifier.fillMaxWidth()) {
-        if (id == null) {
+        if (id == "") {
             Spacer(modifier = Modifier.weight(1.0f))
             Button(onClick = { onAddEdit() }) {
                 Text(text = stringResource(R.string.add))
             }
         } else {
             Spacer(modifier = Modifier.weight(1.0f))
-            Button(onClick = { isAlertVisible = true }) {
+            OutlinedButton(onClick = { isAlertVisible = true }) {
                 Text(text = stringResource(R.string.remove))
             }
+            Spacer(modifier = Modifier.weight(0.2f))
             Button(onClick = { onAddEdit() }) {
                 Text(text = stringResource(R.string.submit))
             }

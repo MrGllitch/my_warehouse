@@ -3,7 +3,8 @@ package eu.glitch.mywarehouse.ui.screens.type
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
+import eu.glitch.mywarehouse.database.IRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TypeListViewModel @Inject constructor(
-    private val typeRepository: ILocalTypeRepository
+    private val repository: RepositoryImpl
 ) : ViewModel(), TypeListActions {
 
     var data: TypeListData = TypeListData()
@@ -23,12 +24,11 @@ class TypeListViewModel @Inject constructor(
 
     override fun loadTypes() {
         viewModelScope.launch {
-            typeRepository.getTypes().collect {
-                data.types = it.toMutableList()
+            data.types = repository.getTypes().toMutableList()
                 _typeListUIState.update {
                     TypeListUIState.TypeListChanged(data)
                 }
-            }
+
 
         }
     }

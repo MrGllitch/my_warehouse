@@ -72,7 +72,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditProductScreen(navigationRouter: INavigationRouter, id: Long?) {
+fun AddEditProductScreen(navigationRouter: INavigationRouter, id: String?) {
     val viewModel = hiltViewModel<AddEditProductViewModel>()
 
     var data by remember {
@@ -98,6 +98,7 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: Long?) {
         when (it) {
             AddEditProductUIState.Loading -> {
                 if (id != null) {
+
                     viewModel.loadProduct(id)
                 }
                 viewModel.loadTypes()
@@ -111,7 +112,7 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: Long?) {
 
             AddEditProductUIState.Success -> {
                 LaunchedEffect(it) {
-                    navigationRouter.returnBack()
+                    navigationRouter.navigateToProductListScreen()
                 }
             }
         }
@@ -344,7 +345,7 @@ fun CreateChipDialog(
 @Composable
 fun FilterItem(
     name: String,
-    id: Long,
+    id: String,
     actions: AddEditProductActions,
     selected: Boolean
 ) {
@@ -376,7 +377,7 @@ fun FilterItem(
 fun TypeColumn(
     types: List<Type>,
     actions: AddEditProductActions,
-    selectedTypeId: Long,
+    selectedTypeId: String,
     modifier: Modifier = Modifier,
     typeError: String?,
 ) {
@@ -427,7 +428,7 @@ fun TypeColumn(
 fun UnitColumn(
     units: List<WarehouseUnit>,
     actions: AddEditProductActions,
-    selectedUnitId: Long,
+    selectedUnitId: String,
     modifier: Modifier = Modifier,
     unitError: String?
 ) {

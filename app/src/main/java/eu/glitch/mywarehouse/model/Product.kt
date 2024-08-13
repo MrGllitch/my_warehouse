@@ -26,15 +26,17 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["type_id", "unit_id"])]
 )
 data class Product(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "p_id")
-    var id: Long? = null,
+    var id: String = "",
     @ColumnInfo(name = "unit_id")
-    var unitId: Long,
+    var unitId: String = "",
     @ColumnInfo(name = "type_id")
-    var typeId: Long,
+    var typeId: String = "",
     var name: String,
     var imageName: String?,
     var barcode: String?,
 
-    )
+    ){
+    constructor() : this("","","","","","")
+}

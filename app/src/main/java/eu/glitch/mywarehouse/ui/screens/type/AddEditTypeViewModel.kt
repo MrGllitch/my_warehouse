@@ -3,7 +3,7 @@ package eu.glitch.mywarehouse.ui.screens.type
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import eu.glitch.mywarehouse.database.type.ILocalTypeRepository
+import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditTypeViewModel @Inject constructor(
-    private val typeRepository: ILocalTypeRepository
+    private val repository: RepositoryImpl
 ) : ViewModel(), AddEditTypeActions {
 
     var data: AddEditTypeData = AddEditTypeData()
@@ -55,37 +55,37 @@ class AddEditTypeViewModel @Inject constructor(
         } else {
             data.iconError = null
         }
-        if (data.type.id == null) {
-            viewModelScope.launch {
-                typeRepository.insertType(data.type)
-            }
-        } else {
-            viewModelScope.launch {
-                typeRepository.updateType(type = data.type)
-            }
-        }
+        viewModelScope.launch {
 
-        _addEditTypeUIState.update {
-            AddEditTypeUIState.Success
+            if (data.type.id == "") {
+                repository.insertType(data.type)
+            } else {
+                repository.updateType(type = data.type)
+            }
+
+            _addEditTypeUIState.update {
+                AddEditTypeUIState.Success
+            }
         }
     }
 
     override fun deleteType() {
         viewModelScope.launch {
-            typeRepository.deleteType(data.type)
+            repository.deleteType(data.type)
+            _addEditTypeUIState.update {
+                AddEditTypeUIState.Success
+            }
         }
-        _addEditTypeUIState.update {
-            AddEditTypeUIState.Success
-        }
+
     }
 
 
-    fun loadType(id: Long) {
+    fun loadType(id: String) {
         viewModelScope.launch {
-            data.type = typeRepository.getType(id)
-        }
-        _addEditTypeUIState.update {
-            AddEditTypeUIState.TypeStateChanged(data)
+            data.type = repository.getType(id)
+            _addEditTypeUIState.update {
+                AddEditTypeUIState.TypeStateChanged(data)
+            }
         }
 
     }
