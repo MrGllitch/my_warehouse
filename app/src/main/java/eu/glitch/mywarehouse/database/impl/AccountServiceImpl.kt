@@ -31,20 +31,28 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth, pri
     override val hasPremium: Boolean
         get() = runBlocking {checkPremium()}
 
-    override suspend fun authenticate(email: String, password: String) : Boolean{
+    override suspend fun authenticate(email: String, password: String): Boolean {
         return suspendCancellableCoroutine { continuation ->
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        continuation.resume(true)
+                        if (continuation.isActive) { // Ensure it is not already resumed
+                            continuation.resume(true)
+                        }
                     } else {
-                        continuation.resume(false)
+                        if (continuation.isActive) {
+                            continuation.resume(false)
+                        }
                     }
-                }.addOnFailureListener { exception ->
-                    continuation.resumeWithException(exception)
+                }
+                .addOnFailureListener { exception ->
+                    if (continuation.isActive) {
+                        continuation.resumeWithException(exception)
+                    }
                 }
         }
     }
+
 
     override fun register(email: String, password: String) : Boolean{
         auth.createUserWithEmailAndPassword(email,password)

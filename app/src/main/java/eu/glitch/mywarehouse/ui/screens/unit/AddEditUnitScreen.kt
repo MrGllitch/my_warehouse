@@ -3,7 +3,9 @@ package eu.glitch.mywarehouse.ui.screens.unit
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -92,22 +94,24 @@ fun AddEditProductScreenContent(
     ) {
 
         OutlinedTextField(value = data.unit.name,
+            modifier = Modifier.fillMaxWidth(),
             onValueChange = { actions.nameChanged(it) },
             label = {
                 Text(
                     text = stringResource(R.string.unit_name)
                 )
             },
-
-
             isError = data.nameError != null,
             supportingText = {
                 if (data.nameError != null) {
                     Text(text = data.nameError!!)
                 }
-            })
+            },
+            singleLine = true
+            )
 
         OutlinedTextField(value = data.unit.shortcut,
+            modifier = Modifier.fillMaxWidth(),
             onValueChange = { actions.shortCutChanged(it) },
             label = {
                 Text(
@@ -119,9 +123,9 @@ fun AddEditProductScreenContent(
                 if (data.unitError != null) {
                     Text(text = data.unitError!!)
                 }
-            })
-        Spacer(modifier = Modifier.weight(1.0f))
-        AddEditRow(name = "Record", id = data.unit.id,
+            },
+            singleLine = true)
+        AddEditRow(name = data.unit.name, id = data.unit.id,
             onAddEdit = { actions.addEditUnit() }, onDelete = { actions.deleteUnit() })
     }
 }

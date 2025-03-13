@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -46,9 +48,7 @@ fun IconPicker(
         mutableStateOf(iconRoute)
     }
 
-    var searchPrompt by remember { mutableStateOf("") }
-    val allIcons = mutableListOf<IconData>(
-    )
+
     val icons = mutableListOf<IconData>(
     )
 
@@ -58,29 +58,17 @@ fun IconPicker(
         if (route.startsWith("icon_")) {
             val name = route.substringAfter("icon_").replace("_", " ")
             val id = field.getInt(null)
-            allIcons.add(IconData(ImageVector.vectorResource(id), name, route))
+            icons.add(IconData(ImageVector.vectorResource(id), name, route))
         }
     }
 
-    if (searchPrompt == "") {
-        icons.addAll(allIcons)
-    } else {
-        Log.d("allIcons", allIcons.joinToString { it.toString() }) // Print names
-        icons.addAll(allIcons.filter {
-            it.name.contains(
-                searchPrompt,
-                ignoreCase = true
-            )
-        })
-    }
+
 
     if (displayed) {
         Dialog(onDismissRequest = { onDismiss() }) {
             Column(modifier = Modifier.background(color = Color.White)) {
 
-                TextField(value = searchPrompt, onValueChange = { searchPrompt = it }, label = {
-                    Text(text = stringResource(R.string.search))
-                })
+
                 HorizontalDivider()
                 LazyVerticalGrid(
                     modifier = Modifier
@@ -112,21 +100,20 @@ fun IconPicker(
 
                 HorizontalDivider()
                 Row {
-                    TextButton(onClick = { selectedIconRoute = "" }) {
-                        Text(text = "Clear")
-                    }
-                    Spacer(modifier = Modifier.size(30.dp))
-                    TextButton(onClick = {
+                    OutlinedButton(onClick = {
                         selectedIconRoute = iconRoute
                         onSelect(selectedIconRoute)
                         onDismiss()
-                    }) {
+                    },
+                        modifier = Modifier.padding(start = 16.dp)) {
                         Text(text = "Cancel")
                     }
-                    TextButton(onClick = {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(onClick = {
                         onSelect(selectedIconRoute)
                         onDismiss()
-                    }) {
+                    },
+                        modifier = Modifier.padding(end = 16.dp)) {
                         Text(text = "Select")
                     }
                 }

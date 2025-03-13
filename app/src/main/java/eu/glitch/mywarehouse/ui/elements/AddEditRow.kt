@@ -3,6 +3,7 @@ package eu.glitch.mywarehouse.ui.elements
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import eu.glitch.mywarehouse.R
 
 @Composable
@@ -33,16 +35,19 @@ fun AddEditRow(
     Row(modifier = Modifier.fillMaxWidth()) {
         if (id == "") {
             Spacer(modifier = Modifier.weight(1.0f))
-            Button(onClick = { onAddEdit() }) {
+            Button(            modifier = Modifier.fillMaxWidth(),
+                onClick = { onAddEdit() }) {
+
                 Text(text = stringResource(R.string.add))
             }
         } else {
             Spacer(modifier = Modifier.weight(1.0f))
-            OutlinedButton(onClick = { isAlertVisible = true }) {
+            OutlinedButton(onClick = { isAlertVisible = true },
+                modifier = Modifier.fillMaxWidth(0.5F).padding(end = 8.dp),) {
                 Text(text = stringResource(R.string.remove))
             }
-            Spacer(modifier = Modifier.weight(0.2f))
-            Button(onClick = { onAddEdit() }) {
+            Button(onClick = { onAddEdit() },
+                modifier = Modifier.fillMaxWidth(1F).padding(start = 8.dp),) {
                 Text(text = stringResource(R.string.submit))
             }
         }
@@ -75,7 +80,7 @@ fun AddEditRow(
                 }
             },
             dismissButton = {
-                Button(onClick = { isAlertVisible = false }) {
+                OutlinedButton(onClick = { isAlertVisible = false }) {
                     Text(text = stringResource(R.string.cancel))
                 }
             }

@@ -1,10 +1,13 @@
 package eu.glitch.mywarehouse.ui.screens.type
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -21,9 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.R
@@ -107,42 +113,45 @@ fun AddEditProductScreenContent(
             .padding(paddingValues)
             .padding(16.dp)
     ) {
-        OutlinedTextField(value = data.type.name,
-            onValueChange = { actions.nameChanged(it) },
-            label = {
-                Text(
-                    text = stringResource(R.string.type_name)
-                )
-            },
-            isError = data.nameError != null,
-            supportingText = {
-                if (data.nameError != null) {
-                    Text(text = data.nameError!!)
-                }
-            }
-        )
-
-        Button(onClick = { showIconPickerDialog = true }) {
-            Row {
-
-                if (data.type.iconRoute != "") {
-                    GetIconByName(name = data.type.iconRoute, contentDescription = "")
-                } else {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(value = data.type.name,
+                onValueChange = { actions.nameChanged(it) },
+                label = {
                     Text(
-                        text = stringResource(R.string.select_icon)
+                        text = stringResource(R.string.type_name)
                     )
+                },
+                isError = data.nameError != null,
+                supportingText = {
+                    if (data.nameError != null) {
+                        Text(text = data.nameError!!)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.8F)
+                    .padding(end = 8.dp)
+            )
+
+            Button(onClick = { showIconPickerDialog = true }, modifier = Modifier.size(64.dp)) {
+                    if (data.type.iconRoute != "") {
+
+                        GetIconByName(modifier = Modifier.size(64.dp), name = data.type.iconRoute, contentDescription = "")
+                    } else {
+                        Text(
+                            text = "?",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
-
-            }
         }
-
         IconPicker(
             iconRoute = data.type.iconRoute,
             onDismiss = { showIconPickerDialog = false },
             onSelect = { actions.iconChanged(it) },
             displayed = showIconPickerDialog
         )
-        Spacer(modifier = Modifier.weight(1.0f))
+
         AddEditRow(
             name = data.type.name,
             id = data.type.id,
