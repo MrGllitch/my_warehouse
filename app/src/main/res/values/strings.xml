@@ -58,5 +58,7 @@
     <string name="chip_name">Tag Name</string>
     <string name="tag">Tag</string>
     <string name="no_tags">No Tags</string>
+    <string name="kategorie">Kategorie</string>
+    <string name="z_lo_ky">Záložky</string>
 
 </resources>

@@ -2,6 +2,7 @@ package eu.glitch.mywarehouse.ui.screens.record
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DisplayMode
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -51,7 +54,6 @@ import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.extensions.getValue
 import eu.glitch.mywarehouse.model.Barcode
 import eu.glitch.mywarehouse.navigation.INavigationRouter
-import eu.glitch.mywarehouse.ui.elements.AddEditRow
 import eu.glitch.mywarehouse.ui.theme.primaryLight
 import eu.glitch.mywarehouse.utils.DateUtils
 
@@ -120,15 +122,19 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: String?) {
             }
         },
             actions = {
+
                 IconButton(onClick = { navigationRouter.navigateToBarcodeScannerScreen() }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.icon_barcode),
                         contentDescription = ""
                     )
                 }
+                IconButton(onClick = { viewModel.addEditRecord() }) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                }
             })
     }) {
-        AddEditProductScreenContent(
+        AddEditRecordScreenContent(
             paddingValues = it,
             data = data,
             actions = viewModel,
@@ -139,7 +145,7 @@ fun AddEditRecordScreen(navigationRouter: INavigationRouter, id: String?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditProductScreenContent(
+fun AddEditRecordScreenContent(
     paddingValues: PaddingValues,
     data: AddEditRecordData,
     actions: AddEditRecordActions,
@@ -163,30 +169,22 @@ fun AddEditProductScreenContent(
 
 
         Column {
-            Row(modifier = Modifier.clickable { isProductExpanded = !isProductExpanded }) {
+            Row(modifier = Modifier
+                .clickable { isProductExpanded = !isProductExpanded }
+                .fillMaxWidth()
+                .padding(8.dp)) {
 
                 Text(
-                    modifier = Modifier
-                        .padding(16.dp),
                     text = selectedProduct?.name ?: stringResource(R.string.select_product),
-                    fontSize = 32.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
-                if (isProductExpanded) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "",
-                        modifier = Modifier.size(32.dp)
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-
-
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "",
+                    modifier = Modifier.size(32.dp)
+                )
             }
 
             DropdownMenu(
@@ -228,18 +226,29 @@ fun AddEditProductScreenContent(
                 }
             })
 
-        Slider(
-            modifier = Modifier.padding(horizontal = 30.dp),
-            value = data.record.quantity.toFloat(),
-            onValueChange = { actions.quantityChanged(it.toInt().toString()) },
-            valueRange = 0f..100f,
-            steps = 99
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "0")
+            Slider(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp),
+                value = data.record.quantity.toFloat(),
+                onValueChange = { actions.quantityChanged(it.toInt().toString()) },
+                valueRange = 0f..100f,
+                steps = 99
+            )
+            Text(text = "100")
+        }
 
         val state =
             rememberDatePickerState(
                 initialSelectedDateMillis = System.currentTimeMillis(),
-                initialDisplayMode = DisplayMode.Input
+                initialDisplayMode = DisplayMode.Picker
             )
 
         LaunchedEffect(state.selectedDateMillis) {
@@ -261,7 +270,7 @@ fun AddEditProductScreenContent(
                     title = {
                         Text(
                             stringResource(R.string.best_before),
-                            fontSize = 28.sp,
+                            fontSize = 24.sp,
                             color = primaryLight
                         )
                     },
@@ -278,11 +287,7 @@ fun AddEditProductScreenContent(
 
 
         Spacer(modifier = Modifier.weight(1f))
-        AddEditRow(
-            name = stringResource(R.string.record),
-            id = data.record.id,
-            onAddEdit = { actions.addEditRecord() },
-            onDelete = { })
+
     }
 
 

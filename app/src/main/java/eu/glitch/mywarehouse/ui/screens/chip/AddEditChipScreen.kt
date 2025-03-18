@@ -19,6 +19,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -131,7 +132,6 @@ fun AddEditChipScreenContent(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             data.chips.forEach {
                 item {
@@ -144,13 +144,14 @@ fun AddEditChipScreenContent(
                                     true
                                 )
                             }
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.Center
+                            .padding(vertical = 8.dp)
+                        .padding(horizontal = 16.dp)
+
                     ) {
                         Text(text = it.name)
                     }
 
-
+                    HorizontalDivider()
                 }
             }
         }
@@ -180,10 +181,8 @@ fun CreateChipDialog(
                     error = data.nameError
                 )
                 Row {
-                    FilledTonalButton(onClick = { actions.isAddEditOpen(false) }) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
+
+
                     if (data.chip.id != "") {
                         OutlinedButton(modifier = Modifier, onClick = {
                             actions.deleteChip()

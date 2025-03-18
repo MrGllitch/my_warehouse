@@ -27,9 +27,9 @@ class LocalRepositoryImpl @Inject constructor(private val unitDao: UnitDao, priv
     }
 
     override suspend fun insertProduct(product: Product) : String {
-        product.id = genId()
-        productDao.insertProduct(product)
-        return product.id
+        val newId = genId()
+        productDao.insertProduct(product.copy(id = newId))
+        return newId
     }
 
     override suspend fun updateProduct(product: Product) {

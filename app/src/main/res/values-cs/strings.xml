@@ -59,4 +59,6 @@
     <string name="chip_name">Jmeno Záložky</string>
     <string name="tag">Záložka</string>
     <string name="no_tags">Žádné záložky</string>
+    <string name="kategorie">Kategorie</string>
+    <string name="z_lo_ky">Záložky</string>
 </resources>

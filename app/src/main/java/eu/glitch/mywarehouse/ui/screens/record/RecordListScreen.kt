@@ -136,6 +136,7 @@ fun ProductListScreenContent(
                 FilterRow(
                     items = data.types,
                     type = "typeId",
+                    name = stringResource(R.string.kategorie),
                     onClick = { type, id, selected ->
                         actions.editFilter(type, id, selected)
                     },
@@ -145,18 +146,28 @@ fun ProductListScreenContent(
                 FilterRow(
                     items = data.chips,
                     type = "chipIds",
+                    name = stringResource(R.string.z_lo_ky),
                     onClick = { type, id, selected ->
                         actions.editFilter(type, id, selected)
                     },
                 )
             }
-            data.filteredRecords.forEach {
+            if (data.filteredRecords.isEmpty()) {
                 item {
-                    RecordRow(
-                        item = it,
-                        actions = actions,
-                        data = data,
-                        onClick = { isEditVisible = true })
+                    NoItem(
+                        paddingValues = PaddingValues(0.dp),
+                        text = stringResource(R.string.please_create_record)
+                    )
+                }
+            } else {
+                data.filteredRecords.forEach {
+                    item {
+                        RecordRow(
+                            item = it,
+                            actions = actions,
+                            data = data,
+                            onClick = { isEditVisible = true })
+                    }
                 }
             }
         }
@@ -164,6 +175,7 @@ fun ProductListScreenContent(
         if (isEditVisible)
             EditRecord(data = data, actions = actions, onCancel = { isEditVisible = false })
     }
+
 }
 
 

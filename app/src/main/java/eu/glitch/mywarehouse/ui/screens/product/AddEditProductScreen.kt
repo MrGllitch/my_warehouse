@@ -3,6 +3,7 @@ package eu.glitch.mywarehouse.ui.screens.product
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -96,7 +99,7 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: String?) {
 
     state.value.let {
         when (it) {
-            AddEditProductUIState.Loading -> {
+             AddEditProductUIState.Loading -> {
                 if (id != null) {
 
                     viewModel.loadProduct(id)
@@ -105,16 +108,15 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: String?) {
                 viewModel.loadUnits()
                 viewModel.loadChips()
             }
-
             is AddEditProductUIState.ProductStateChanged -> {
                 data = it.data
             }
-
-            AddEditProductUIState.Success -> {
+             AddEditProductUIState.Success -> {
                 LaunchedEffect(it) {
                     navigationRouter.navigateToProductListScreen()
                 }
             }
+
         }
     }
 
@@ -273,25 +275,27 @@ fun ChipRow(
     data: AddEditProductData
 
 ) {
-    Row {
+    LazyRow {
         if (data.chips.isEmpty()) {
             //create first zalozku
         } else {
-            LazyRow {
-                data.chips.forEach { chip ->
-                    item {
-                        val selected = data.productChips.find { it == chip.id } != null
-                        FilterItem(
-                            name = chip.name,
-                            id = chip.id!!,
-                            actions = actions,
-                            selected = selected
-                        )
-                    }
+
+            data.chips.forEach { chip ->
+                item {
+                    val selected = data.productChips.find { it == chip.id } != null
+                    FilterItem(
+                        name = chip.name,
+                        id = chip.id!!,
+                        actions = actions,
+                        selected = selected
+                    )
                 }
             }
+
         }
-        CreateChipDialog(actions = actions, data = data)
+        item {
+            CreateChipDialog(actions = actions, data = data)
+        }
     }
 }
 

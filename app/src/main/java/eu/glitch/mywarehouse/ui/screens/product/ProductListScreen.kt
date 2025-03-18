@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -135,6 +137,7 @@ fun ProductListScreenContent(
             FilterRow(
                 items = data.types,
                 type = "typeId",
+                name = stringResource(R.string.kategorie),
                 onClick = { type, id, selected ->
                     actions.editFilter(type, id, selected)
                 },
@@ -143,10 +146,14 @@ fun ProductListScreenContent(
             FilterRow(
                 items = data.chips,
                 type = "chipIds",
+                name = stringResource(R.string.z_lo_ky),
                 onClick = { type, id, selected ->
                     actions.editFilter(type, id, selected)
                 },
             )
+            if (data.filteredProducts.isEmpty()) {
+                    NoItem(paddingValues = PaddingValues(0.dp), text = stringResource(R.string.please_create_product))
+                }else{
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
@@ -213,6 +220,7 @@ fun ProductListScreenContent(
                 }
             }
         }
+    }
     }
 }
 

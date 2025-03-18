@@ -1,5 +1,7 @@
 package eu.glitch.mywarehouse.ui.elements
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,21 +29,26 @@ fun <E : FilterItem> FilterRow(
     modifier: Modifier = Modifier,
     items: List<E>,
     type: String,
-    onClick: (String, String, Boolean) -> Unit
+    onClick: (String, String, Boolean) -> Unit,
+    name: String
 
 ) {
-    LazyRow(modifier = modifier) {
-        items.forEach {
-            item {
-                Filter(
-                    id = it.id!!,
-                    name = it.name,
-                    type = type,
-                    onClick = onClick
-                )
+    Column(verticalArrangement = Arrangement.spacedBy(-8.dp), modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(text = name)
+        LazyRow(modifier = modifier) {
+            items.forEach {
+                item {
+                    Filter(
+                        id = it.id!!,
+                        name = it.name,
+                        type = type,
+                        onClick = onClick
+                    )
+                }
             }
         }
     }
+
 }
 
 @Composable
@@ -54,7 +61,7 @@ private fun Filter(
     var selected by remember { mutableStateOf(false) }
 
     FilterChip(
-        modifier = Modifier.padding(horizontal = 4.dp),
+        modifier = Modifier.padding(end = 8.dp),
         onClick = {
             selected = !selected
             onClick(type, id, selected)
