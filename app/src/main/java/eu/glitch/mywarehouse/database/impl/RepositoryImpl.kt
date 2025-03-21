@@ -15,7 +15,7 @@ import javax.inject.Inject
 class RepositoryImpl @Inject constructor(private val account: AccountServiceImpl, private val cloud: FirestoreRepositoryImpl, private val local: LocalRepositoryImpl) :
     IRepository {
     private val currentDataSource: IRepository
-        get() = if (account.hasPremium)  cloud else local
+        get() = if (account.hasUser)  cloud else local
 
     suspend fun syncDataToCloud(): Flow<SyncStatus> = flow {
         try {
