@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.database.impl
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -107,9 +108,14 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth, pri
     ): AuthResult {
         val invitationRef = firestore.collection("invitations").document()
 
+        val senderE = senderEmail.lowercase()
+        val receiverE = receiverEmail.lowercase()
+
+
         val invitation = mapOf(
-            "senderEmail" to senderEmail,
-            "receiverEmail" to receiverEmail,
+            "senderId" to currentUserId,
+            "senderEmail" to senderE,
+            "receiverEmail" to receiverE,
             "status" to "pending",
             "role" to role
         )
@@ -170,21 +176,41 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth, pri
             throw IllegalStateException("Failed to remove invitation", e)
         }
     }
+    override suspend fun isInvitationExisting(receiverEmail: String): Boolean {
+        val currentUserEmail = auth.currentUser?.email?.lowercase() ?: ""
+        val normalizedReceiverEmail = receiverEmail.lowercase()
 
+        return try {
+            val snapshot = firestore.collection("invitations")
+                .whereEqualTo("receiverEmail", normalizedReceiverEmail)
+                .whereEqualTo("senderEmail", currentUserEmail)
+                .get()
+                .await()
+            !snapshot.isEmpty // If the snapshot contains any documents, return true (invitation exists)
+        } catch (e: Exception) {
+            Log.e("isInvitationExisting", "Error checking for existing invitation", e)
+            false // Return false in case of an error
+        }
+    }
 
     override suspend fun fetchInvites(): List<Invite> {
         try {
             val invitesRef = firestore.collection("invitations")
-            val snapshot = invitesRef.whereEqualTo("receiverEmail", auth.currentUser?.email).get().await()
+
+            // Query using the lowercase email
+            val snapshot = invitesRef.whereEqualTo("receiverEmail", auth.currentUser?.email?.toLowerCase()).get().await()
+
+            Log.d("FetchInvites", "Snapshot fetched: ${snapshot.documents.size} documents")
 
             return snapshot.documents.mapNotNull { document ->
-                document.toObject(Invite::class.java)
+                val invite = document.toObject(Invite::class.java)
+                invite?.id = document.id
+                invite
             }
         } catch (e: Exception) {
             throw IllegalStateException("Failed to fetch invitations", e)
         }
     }
-
 
     override suspend fun fetchEmployees(companyId: String): List<User> {
         // Check if companyId is null or empty
@@ -242,11 +268,34 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth, pri
                 firestore.collection("users").document(currentUserId)
                     .update("companyId", FieldValue.delete(), "role", FieldValue.delete()).await()
 
+                val invitation = fetchInvites().find { it.receiverEmail == auth.currentUser?.email }
+                invitation?.let {
+                    removeInvitation(it.id)
+                }
+
             } else {
                 throw IllegalStateException("User is not part of any company")
             }
         } catch (e: Exception) {
             throw IllegalStateException("Failed to leave company", e)
+        }
+    }
+    override suspend fun fetchAcceptedInvitesForUser(userEmail: String): List<Invite> {
+        try {
+            val invitesRef = firestore.collection("invitations")
+            val snapshot = invitesRef
+                .whereEqualTo("receiverEmail", userEmail)
+                .whereEqualTo("status", "accepted")
+                .get()
+                .await()
+
+            return snapshot.documents.mapNotNull { document ->
+                val invite = document.toObject(Invite::class.java)
+                invite?.id = document.id
+                invite
+            }
+        } catch (e: Exception) {
+            throw IllegalStateException("Failed to fetch accepted invitations", e)
         }
     }
 

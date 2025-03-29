@@ -28,6 +28,10 @@ interface IAccountService {
 
     suspend fun leaveCompany()
 
+    suspend fun isInvitationExisting(receiverEmail: String): Boolean
+
+    suspend fun fetchAcceptedInvitesForUser(userEmail: String): List<Invite>
+
      fun logout()
 
      enum class Role {

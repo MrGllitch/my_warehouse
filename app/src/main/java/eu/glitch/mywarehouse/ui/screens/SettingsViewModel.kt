@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,9 @@ class SettingsViewModel @Inject constructor(
     private val _syncStatus: MutableStateFlow<SyncStatus> = MutableStateFlow(value=SyncStatus.Waiting)
     val syncStatus =  _syncStatus.asStateFlow()
 
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage = _toastMessage.asStateFlow()
+
     override fun syncData() {
         viewModelScope.launch {
             repository.syncDataToCloud().collect { status ->
@@ -52,43 +56,91 @@ class SettingsViewModel @Inject constructor(
 
     override fun invite() {
         viewModelScope.launch {
-            if (data.inviteEmail == ""){
+            // Check if the invite email is empty
+            if (data.inviteEmail == "") {
                 data.inviteEmailError = "Email is required"
                 _settingsUIState.update {
                     SettingsUIState.SettingStateChanged(data)
                 }
                 return@launch
-            }else{
+            } else {
                 data.inviteEmailError = null
                 _settingsUIState.update {
                     SettingsUIState.SettingStateChanged(data)
                 }
             }
-        account.sendInvitation(data.user!!.email, data.inviteEmail, data.inviteRole)
+
+            // Check if the user is trying to invite themselves
+            if (data.inviteEmail == data.user!!.email) {
+                data.inviteEmailError = "You cannot invite yourself"
+                _settingsUIState.update {
+                    SettingsUIState.SettingStateChanged(data)
+                }
+                return@launch
+            }
+
+            val invitationExists = account.isInvitationExisting(data.inviteEmail)
+            if (invitationExists) {
+                // If the user already has an invitation
+                data.inviteEmailError = "This user has already been invited"
+                _settingsUIState.update {
+                    SettingsUIState.SettingStateChanged(data)
+                }
+                return@launch
+            }
+
+            try {
+                account.sendInvitation(data.user!!.email, data.inviteEmail, data.inviteRole)
+                _toastMessage.update { "Invitation sent" }
+                data.inviteEmail = ""
+            } catch (e: Exception) {
+                data.inviteEmailError = "Error sending invitation"
+                _settingsUIState.update {
+                    SettingsUIState.SettingStateChanged(data)
+                }
+            }
         }
     }
 
+
+
     override fun acceptInvite(invitationId: String) {
         viewModelScope.launch {
-            account.acceptInvitation(invitationId, data.user!!.id)
+            when (val result = account.acceptInvitation(invitationId, data.user!!.id)) {
+                is AccountServiceImpl.AuthResult.Success -> {
+                    _toastMessage.update { "Invitation accepted successfully" }
+                }
+                is AccountServiceImpl.AuthResult.Failure -> {
+                    _toastMessage.update { "Failed to accept invitation: ${result.error}" }
+                }
+                is AccountServiceImpl.AuthResult.Exception -> {
+                    _toastMessage.update { "Error: ${result.exception.localizedMessage}" }
+                }
+            }
+            loadUser()
         }
     }
 
     override fun removeInvite(invitationId: String) {
         viewModelScope.launch {
             account.removeInvitation(invitationId)
+            _toastMessage.update { "Invitation removed" }
+            loadUser()
         }
     }
 
     override fun leaveCompany() {
         viewModelScope.launch {
             account.leaveCompany()
+            loadUser()
+            _toastMessage.update { "Successfully left" }
         }
     }
 
     override fun removeEmployee(email: String) {
         viewModelScope.launch {
             account.removeEmployee(email)
+            _toastMessage.update { "Employee removed" }
         }
     }
 
@@ -103,6 +155,9 @@ class SettingsViewModel @Inject constructor(
             if (data.user?.companyId == null && data.user != null) {
                 data.users = account.fetchEmployees(data.user!!.id)
                 data.invitations = account.fetchInvites()
+            }else if(data.user != null){
+                data.acceptedInvitations = account.fetchAcceptedInvitesForUser(data.user!!.email)
+                data.senderEmail = data.acceptedInvitations!!.firstOrNull()?.senderEmail
             }
 
             _settingsUIState.update {
@@ -166,7 +221,9 @@ class SettingsViewModel @Inject constructor(
         data.password = ""
         loadUser()
     }
-
+    fun clearToastMessage() {
+        _toastMessage.update { null }
+    }
 }
 
 sealed class SettingsUIState {
@@ -190,6 +247,8 @@ class SettingsData {
 
     var users: List<User>? = null
     var invitations: List<Invite>? = null
+    var acceptedInvitations: List<Invite>? = null
+    var senderEmail: String? = null
 
 }
 
