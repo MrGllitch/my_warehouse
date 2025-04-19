@@ -20,6 +20,10 @@ import javax.inject.Inject
 
 class LocalRepositoryImpl @Inject constructor(private val unitDao: UnitDao, private val productDao: ProductDao, private val chipDao: ChipDao, private val recordDao: RecordDao, private val typeDao: TypeDao) :
     IRepository {
+    override suspend fun isInitialized(): Boolean {
+        return true
+    }
+
     override suspend fun getProducts(): List<Product> {
         return withContext(Dispatchers.IO) {
             productDao.getAllProducts()

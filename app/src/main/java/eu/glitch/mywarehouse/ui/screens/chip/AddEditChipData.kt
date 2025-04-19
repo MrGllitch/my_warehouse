@@ -6,6 +6,7 @@ class AddEditChipData {
     var chips: MutableList<Chip> = mutableListOf()
     var chip = Chip("", "")
     var isAddEditOpen: Boolean = false
+    var isAdmin = true
 
     var nameError: String? = null
 

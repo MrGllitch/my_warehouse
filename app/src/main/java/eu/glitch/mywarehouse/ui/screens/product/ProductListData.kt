@@ -9,6 +9,7 @@ class ProductListData {
     var filteredProducts: MutableList<Product> = mutableListOf()
     var types: MutableList<Type> = mutableListOf()
     var chips: MutableList<Chip> = mutableListOf()
+    var isAdmin: Boolean = true
 
     var filters: MutableMap<String, MutableList<String>> = mutableMapOf()
 }

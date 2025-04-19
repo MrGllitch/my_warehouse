@@ -41,6 +41,8 @@ import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
+import eu.glitch.mywarehouse.ui.elements.LoadingScreen
+import eu.glitch.mywarehouse.ui.screens.record.RecordListUIState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,22 +83,27 @@ fun TypeListScreen(navigationRouter: INavigationRouter) {
                 })
         },
             floatingActionButton = {
+                if (data.isAdmin){
                 FloatingActionButton(onClick = { navigationRouter.navigateToAddEditTypeScreen(null) }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
-            }) {
-            ProductListScreenContent(
+            }}) {
+            if (state.value is TypeListUIState.Loading) {
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+                TypeListScreenContent(
                 paddingValues = it,
                 data = data,
                 actions = viewModel,
                 navigationRouter = navigationRouter
             )
+            }
         }
     })
 }
 
 @Composable
-fun ProductListScreenContent(
+fun TypeListScreenContent(
     paddingValues: PaddingValues,
     data: TypeListData,
     actions: TypeListActions,
@@ -108,8 +115,8 @@ fun ProductListScreenContent(
     ) {
         data.types.forEach {
             item {
-                TypeRow(iconName = it.iconRoute, name = it.name, onCLick = {
-                    navigationRouter.navigateToAddEditTypeScreen(it.id)
+                TypeRow(iconName = it.iconRoute, name = it.name, data=data, onCLick = {
+                    if (data.isAdmin) navigationRouter.navigateToAddEditTypeScreen(it.id)
                 })
             }
         }
@@ -117,7 +124,7 @@ fun ProductListScreenContent(
 }
 
 @Composable
-fun TypeRow(iconName: String, name: String, onCLick: () -> Unit) {
+fun TypeRow(iconName: String, name: String, onCLick: () -> Unit, data: TypeListData) {
     Row(modifier = Modifier
         .clickable { onCLick() }
         .padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -135,8 +142,10 @@ fun TypeRow(iconName: String, name: String, onCLick: () -> Unit) {
             fontWeight = FontWeight.Light,
         )
         Spacer(modifier = Modifier.weight(1f))
+        if (data.isAdmin){
+
         Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
-    }
+    }}
     HorizontalDivider()
 }
 

@@ -51,6 +51,7 @@ import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import eu.glitch.mywarehouse.ui.elements.FilterRow
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
+import eu.glitch.mywarehouse.ui.elements.LoadingScreen
 import eu.glitch.mywarehouse.ui.elements.NoItem
 import eu.glitch.mywarehouse.ui.elements.shake
 import kotlinx.coroutines.launch
@@ -97,25 +98,31 @@ fun ProductListScreen(navigationRouter: INavigationRouter) {
                 })
         },
             floatingActionButton = {
+                if (data.isAdmin){
                 FloatingActionButton(
                     modifier = if (isEmpty) {
                         Modifier.shake()
                     } else {
                         Modifier
-                    }, onClick = {
+                    }
+                    , onClick = {
                         navigationRouter.navigateToAddEditProductScreen(
                             null
                         )
                     }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
-            }) {
-            ProductListScreenContent(
-                paddingValues = it,
-                data = data,
-                actions = viewModel,
-                router = navigationRouter
-            )
+            }}) {
+            if (state.value is ProductListUIState.Loading) {
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+                ProductListScreenContent(
+                    paddingValues = it,
+                    data = data,
+                    actions = viewModel,
+                    router = navigationRouter
+                )
+            }
         }
     })
 }
@@ -169,7 +176,8 @@ fun ProductListScreenContent(
                                 //    color = Color.LightGray,
                                 //    shape = RoundedCornerShape(16.dp)
                                 //)
-                                .clickable { router.navigateToAddEditProductScreen(product.id) }
+                                .clickable {
+                                    if (data.isAdmin) router.navigateToAddEditProductScreen(product.id) }
                                 .padding(4.dp)
                                 .shadow(2.dp)
                                 .padding(10.dp)

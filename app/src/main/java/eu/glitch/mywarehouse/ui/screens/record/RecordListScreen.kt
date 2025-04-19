@@ -1,13 +1,22 @@
 package eu.glitch.mywarehouse.ui.screens.record
 
+import android.graphics.drawable.GradientDrawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,24 +40,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
+import androidx.wear.compose.material.FractionalThreshold
+import androidx.wear.compose.material.SwipeableState
+import androidx.wear.compose.material.rememberSwipeableState
+import androidx.wear.compose.material.swipeable
 import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.model.RecordListItem
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
 import eu.glitch.mywarehouse.ui.elements.FilterRow
 import eu.glitch.mywarehouse.ui.elements.GetIconByName
+import eu.glitch.mywarehouse.ui.elements.LoadingScreen
 import eu.glitch.mywarehouse.ui.elements.NoItem
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
 import eu.glitch.mywarehouse.ui.elements.shake
+import eu.glitch.mywarehouse.ui.screens.product.ProductListUIState
 import eu.glitch.mywarehouse.ui.theme.errorContainerLight
 import eu.glitch.mywarehouse.ui.theme.errorLight
 import eu.glitch.mywarehouse.ui.theme.onPrimaryContainerLight
@@ -57,6 +78,7 @@ import eu.glitch.mywarehouse.ui.theme.secondaryContainerLight
 import eu.glitch.mywarehouse.utils.DateUtils
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,14 +99,20 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
     state.value.let {
         when (it) {
             is RecordListUIState.Loading -> {
-                 viewModel.loadRecords()
                  viewModel.loadTypes()
                  viewModel.loadChips()
+                 viewModel.loadRecords()
+
             }
 
             is RecordListUIState.RecordListChanged -> {
                 data = it.data
                 isEmpty = it.data.records.isEmpty()
+            }
+
+            is RecordListUIState.Error -> {
+
+
             }
         }
     }
@@ -114,13 +142,17 @@ fun RecordListScreen(navigationRouter: INavigationRouter) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
             }) {
-            ProductListScreenContent(paddingValues = it, data = data, actions = viewModel)
+            if (state.value is RecordListUIState.Loading) {
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+            RecordListScreenContent(paddingValues = it, data = data, actions = viewModel)
+            }
         }
     })
 }
 
 @Composable
-fun ProductListScreenContent(
+fun RecordListScreenContent(
     paddingValues: PaddingValues,
     data: RecordListData,
     actions: RecordListActions
@@ -178,7 +210,7 @@ fun ProductListScreenContent(
 
 }
 
-
+@OptIn(ExperimentalWearMaterialApi::class)
 @Composable
 fun RecordRow(
     item: RecordListItem,
@@ -190,39 +222,81 @@ fun RecordRow(
         add(Calendar.MONTH, 1)
     }.timeInMillis
 
+    val swipeWidth = 80.dp
+    val swipeableState = rememberSwipeableState(initialValue = 0)
+    val anchorPx = with(LocalDensity.current) { swipeWidth.toPx() }
+    val anchors = mapOf(0f to 0, -anchorPx to 1)
 
-    Row(modifier = Modifier
-        .padding(16.dp)
-        .clickable {
-            actions.setEditedRecord(item)
-            data.tempQuantityChange = (item.record.quantity * -1).toString()
-
-            onClick()
-        }) {
-        GetIconByName(name = item.iconRoute, contentDescription = "")
-        Column(verticalArrangement = Arrangement.Center) {
-            Row {
-                Text(
-                    text = stringResource(R.string.best_before) + " ",
-                    fontSize = 12.sp,
-                    color = primaryLight
-                )
-                Text(
-                    text = DateUtils.getDateString(
-                        item.record.dateTo
-                    ),
-                    fontSize = 12.sp,
-                    fontWeight = if (item.record.dateTo <= oneMonthFromToday) FontWeight.Bold else FontWeight.Medium,
-                    color = if (item.record.dateTo <= oneMonthFromToday) errorLight else primaryLight
-                )
-            }
-            Text(text = item.name, fontSize = 32.sp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                thresholds = { _, _ -> FractionalThreshold(0.5f) },
+                orientation = Orientation.Horizontal
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()  // cover the whole item area
+                .background(Color.Red),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Text(
+                text = "-1",
+                color = Color.White,
+                modifier = Modifier.padding(end = 16.dp)  // padding from right edge
+            )
         }
-        Spacer(modifier = Modifier.weight(1.0f))
-        Text(text = "${item.record.quantity}/${item.record.startQuantity} ${item.shortcut}")
+
+        // Row content
+        Row(
+            modifier = Modifier
+                .offset { IntOffset(x = swipeableState.offset.value.roundToInt(), y = 0) }
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clickable {
+                    actions.setEditedRecord(item)
+                    data.tempQuantityChange = (item.record.quantity * -1).toString()
+                    onClick()
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GetIconByName(name = item.iconRoute, contentDescription = "")
+            Column(verticalArrangement = Arrangement.Center) {
+                Row {
+                    Text(
+                        text = stringResource(R.string.best_before) + " ",
+                        fontSize = 12.sp,
+                        color = primaryLight
+                    )
+                    Text(
+                        text = DateUtils.getDateString(item.record.dateTo),
+                        fontSize = 12.sp,
+                        fontWeight = if (item.record.dateTo <= oneMonthFromToday) FontWeight.Bold else FontWeight.Medium,
+                        color = if (item.record.dateTo <= oneMonthFromToday) errorLight else primaryLight
+                    )
+                }
+                Text(text = item.name, fontSize = 32.sp)
+            }
+            Spacer(modifier = Modifier.weight(1.0f))
+            Text(text = "${item.record.quantity}/${item.record.startQuantity} ${item.shortcut}")
+        }
     }
+
     HorizontalDivider()
+    LaunchedEffect(swipeableState.currentValue) {
+        if (swipeableState.currentValue == 1) {  // swiped open
+            actions.removeOne(item.record)
+            swipeableState.animateTo(0)
+        }
+    }
 }
+
+
+
 
 @Composable
 fun EditRecord(

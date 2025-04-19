@@ -44,8 +44,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
+import eu.glitch.mywarehouse.ui.elements.LoadingScreen
 import eu.glitch.mywarehouse.ui.elements.NoItem
 import eu.glitch.mywarehouse.ui.elements.TextFieldWError
+import eu.glitch.mywarehouse.ui.screens.unit.UnitListUIState
 import eu.glitch.mywarehouse.ui.theme.surfaceLight
 import kotlinx.coroutines.launch
 
@@ -96,6 +98,7 @@ fun AddEditChipScreen(navigationRouter: INavigationRouter, id: String?) {
                 })
         },
             floatingActionButton = {
+                if (data.isAdmin){
                 FloatingActionButton(
                     onClick = {
                         viewModel.newChipCreation()
@@ -103,17 +106,19 @@ fun AddEditChipScreen(navigationRouter: INavigationRouter, id: String?) {
                     }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
-            }
+            }}
         ) {
+        if (state.value is AddEditChipUIState.Loading) {
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+                AddEditChipScreenContent(
+                    paddingValues = it,
+                    data = data,
+                    actions = viewModel
+                )
 
-            AddEditChipScreenContent(
-                paddingValues = it,
-                data = data,
-                actions = viewModel
-            )
-
-            CreateChipDialog(data = data, actions = viewModel)
-
+                CreateChipDialog(data = data, actions = viewModel)
+            }
         }
     })
 }
@@ -139,10 +144,11 @@ fun AddEditChipScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
+                                if (data.isAdmin){
                                 actions.editChipChanged(it)
                                 actions.isAddEditOpen(
                                     true
-                                )
+                                )}
                             }
                             .padding(vertical = 8.dp)
                         .padding(horizontal = 16.dp)

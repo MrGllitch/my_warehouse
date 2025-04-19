@@ -10,6 +10,7 @@ import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
 
 interface IRepository {
+    suspend fun isInitialized(): Boolean
     //products
     suspend fun getProducts(): List<Product>
     suspend fun insertProduct(product: Product) : String

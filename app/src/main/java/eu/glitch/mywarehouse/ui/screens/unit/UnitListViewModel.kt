@@ -23,6 +23,7 @@ class UnitListViewModel @Inject constructor(
 
     override fun loadUnits() {
         viewModelScope.launch {
+            data.isAdmin = repository.isAdmin()
             data.units = repository.getUnits().toMutableList()
                 _unitListUIState.update {
                     UnitListUIState.UnitStateChanged(data)

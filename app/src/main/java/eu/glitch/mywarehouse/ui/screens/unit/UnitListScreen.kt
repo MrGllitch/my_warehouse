@@ -40,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.glitch.mywarehouse.R
 import eu.glitch.mywarehouse.navigation.INavigationRouter
 import eu.glitch.mywarehouse.navigation.NavigationDrawer
+import eu.glitch.mywarehouse.ui.elements.LoadingScreen
+import eu.glitch.mywarehouse.ui.screens.type.TypeListUIState
 import eu.glitch.mywarehouse.ui.theme.displayFontFamily
 import kotlinx.coroutines.launch
 
@@ -81,27 +83,31 @@ fun UnitListScreen(navigationRouter: INavigationRouter) {
                 })
         },
             floatingActionButton = {
+                if (data.isAdmin){
                 FloatingActionButton(onClick = {
                     navigationRouter.navigateToAddEditUnitScreen(null)
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
                 }
-            }
+            }}
         ) {
-            ProductListScreenContent(
+            if (state.value is UnitListUIState.Loading) {
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+                UnitListScreenContent(
                 paddingValues = it,
                 data = data,
                 actions = viewModel,
                 navigationRouter = navigationRouter
             )
-        }
+        }}
     }
     )
 }
 
 
 @Composable
-fun ProductListScreenContent(
+fun UnitListScreenContent(
     paddingValues: PaddingValues,
     data: UnitListData,
     actions: UnitListActions,
@@ -111,9 +117,10 @@ fun ProductListScreenContent(
         data.units.forEach {
             item {
                 UnitRow(
-                    onClick = { navigationRouter.navigateToAddEditUnitScreen(it.id) },
+                    onClick = { if (data.isAdmin) navigationRouter.navigateToAddEditUnitScreen(it.id) },
                     shortCut = it.shortcut,
-                    name = it.name
+                    name = it.name,
+                    data = data
                 )
             }
         }
@@ -126,7 +133,8 @@ fun ProductListScreenContent(
 fun UnitRow(
     onClick: () -> Unit,
     shortCut: String,
-    name: String
+    name: String,
+    data: UnitListData
 ) {
     Row(
         modifier = Modifier
@@ -150,8 +158,9 @@ fun UnitRow(
             )
         }
         Spacer(modifier = Modifier.weight(1.0f))
-        Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
-
+        if (data.isAdmin) {
+            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+        }
     }
     HorizontalDivider()
 }

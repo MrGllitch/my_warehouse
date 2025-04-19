@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import eu.glitch.mywarehouse.database.impl.AccountServiceImpl
+import eu.glitch.mywarehouse.database.impl.FirestoreRepositoryImpl
 import eu.glitch.mywarehouse.database.impl.RepositoryImpl
 import eu.glitch.mywarehouse.database.impl.SyncStatus
 import eu.glitch.mywarehouse.model.User
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val account: AccountServiceImpl,
-    private val repository: RepositoryImpl
+    private val repository: RepositoryImpl,
+    private val firestore: FirestoreRepositoryImpl
 ) : ViewModel(), SettingsActions {
     var data: SettingsData = SettingsData()
 
@@ -148,6 +150,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             if (account.currentUser != null) {
                 data.user = account.currentUser
+                firestore.updateDaoForNewCompany()
             } else {
                 data.user = null
             }

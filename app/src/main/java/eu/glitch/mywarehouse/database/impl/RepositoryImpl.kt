@@ -17,6 +17,14 @@ class RepositoryImpl @Inject constructor(private val account: AccountServiceImpl
     private val currentDataSource: IRepository
         get() = if (account.hasUser)  cloud else local
 
+
+    suspend fun isAdmin(): Boolean {
+        if (account.hasUser) {
+            return cloud.fetchCurrentUserRole() == "admin"
+        }
+        return true
+    }
+
     suspend fun syncDataToCloud(): Flow<SyncStatus> = flow {
         try {
             emit(SyncStatus.Syncing)
@@ -45,6 +53,14 @@ class RepositoryImpl @Inject constructor(private val account: AccountServiceImpl
     private suspend fun <T> syncTable(data: List<T>, saveFunction: suspend (T) -> Unit) {
         data.forEach { item ->
             saveFunction(item)
+        }
+    }
+
+    override suspend fun isInitialized(): Boolean {
+        return if (currentDataSource is FirestoreRepositoryImpl) {
+            cloud.isInitialized()
+        }else{
+            true
         }
     }
 

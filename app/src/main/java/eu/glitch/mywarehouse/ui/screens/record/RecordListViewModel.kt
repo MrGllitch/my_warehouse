@@ -4,14 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import eu.glitch.mywarehouse.database.IRepository
 import eu.glitch.mywarehouse.database.impl.RepositoryImpl
+import eu.glitch.mywarehouse.model.Record
 
 import eu.glitch.mywarehouse.model.RecordListItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.reflect.full.memberProperties
 
@@ -21,11 +24,23 @@ class RecordListViewModel @Inject constructor(
 ) : ViewModel(), RecordListActions {
     var data: RecordListData = RecordListData()
 
+    private var isInitialized = false
 
     private val _recordListUIState: MutableStateFlow<RecordListUIState> =
         MutableStateFlow(value = RecordListUIState.Loading)
     val recordListUIState = _recordListUIState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            while (!repository.isInitialized()) {
+                delay(10)
+            }
+            isInitialized = repository.isInitialized()
+            loadChips()
+            loadTypes()
+            loadRecords()
+        }
+    }
 
     override fun submitChanges() {
         try {
@@ -36,6 +51,26 @@ class RecordListViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateRecord(data.editRecord!!)
             loadRecords()
+        }
+    }
+
+    override fun removeOne(record: Record) {
+        viewModelScope.launch {
+            if (record.quantity > 0) {
+                record.quantity -= 1
+
+                repository.updateRecord(record)
+
+                val index = data.records.indexOfFirst { it.record.id == record.id }
+                if (index != -1) {
+                    data.records[index] = data.records[index].copy(record = record)
+                    _recordListUIState.update {
+                        RecordListUIState.RecordListChanged(data)
+                    }
+                }
+            } else {
+                Log.e("removeOne", "quantity is already zero.")
+            }
         }
     }
 
@@ -123,40 +158,41 @@ class RecordListViewModel @Inject constructor(
     }
 
     fun loadRecords() {
+        if (isInitialized){
         viewModelScope.launch {
-            data.records = repository.getRecordListItems().toMutableList()
-            val filteredList = data.records.filter { it.record.quantity > 0 }
-            data.records = filteredList.toMutableList()
+            _recordListUIState.update { RecordListUIState.Loading }
 
-            filterRecords()
+            try {
+                data.records = repository.getRecordListItems().toMutableList()
 
-            _recordListUIState.update {
-                RecordListUIState.RecordListChanged(data)
+                val filteredList = data.records.filter { it.record.quantity > 0 }
+
+                data.records = filteredList.toMutableList()
+
+                withContext(Dispatchers.Default) {
+                    filterRecords()
+                    _recordListUIState.update {
+                        RecordListUIState.RecordListChanged(data)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("loadRecords", "Error loading records: ${e.message}")
+                _recordListUIState.update { RecordListUIState.Error(e.message ?: "Unknown error") }
             }
-        }
+        }}
     }
 
     fun loadTypes() {
+        if (isInitialized){
         viewModelScope.launch {
             data.types = repository.getTypes().toMutableList()
-
-
-                _recordListUIState.update {
-                    RecordListUIState.RecordListChanged(data)
-                }
-
-        }
+        }}
     }
 
     fun loadChips() {
+        if (isInitialized){
         viewModelScope.launch {
             data.chips = repository.getChips().toMutableList()
-
-
-                _recordListUIState.update {
-                    RecordListUIState.RecordListChanged(data)
-                }
-            }
-
+            }}
     }
 }

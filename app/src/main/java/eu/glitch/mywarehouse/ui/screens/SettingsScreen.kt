@@ -223,13 +223,14 @@ fun SettingsScreenContent(
             )
 
             // Sync Button
+            if (data.user!!.role != "employee"){
             Button(
                 onClick = { actions.syncData() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
             ) {
                 Text(text = data.syncStatus ?: "Sync Database")
-            }
+            }}
 
             if (data.user!!.companyId == null) {
                 // Invite User Section
@@ -267,6 +268,7 @@ fun SettingsScreenContent(
                     Text(text = "Invite")
                 }
 
+                if (data.users?.size != 0){
                 // Users List
                 LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
                     data.users?.forEach { user ->
@@ -285,7 +287,7 @@ fun SettingsScreenContent(
                             }
                         }
                     }
-                }
+                }}else{
 
                 // Invitations List
                 if (data.invitations?.isEmpty() == true) {
@@ -315,6 +317,7 @@ fun SettingsScreenContent(
                             }
                         }
                     }
+                }
                 }
             } else {
                 // Under Company

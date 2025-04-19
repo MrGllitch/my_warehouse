@@ -24,6 +24,7 @@ class TypeListViewModel @Inject constructor(
 
     override fun loadTypes() {
         viewModelScope.launch {
+            data.isAdmin = repository.isAdmin()
             data.types = repository.getTypes().toMutableList()
                 _typeListUIState.update {
                     TypeListUIState.TypeListChanged(data)

@@ -30,6 +30,7 @@ class AddEditChipViewModel @Inject constructor(
 
     fun loadChips() {
         viewModelScope.launch {
+            data.isAdmin = repository.isAdmin()
             data.chips = repository.getChips().toMutableList()
                 _addEditChipUIState.update {
                     AddEditChipUIState.ProductStateChanged(data)

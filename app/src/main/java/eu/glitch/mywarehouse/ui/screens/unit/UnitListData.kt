@@ -4,4 +4,5 @@ import eu.glitch.mywarehouse.model.WarehouseUnit
 
 class UnitListData {
     var units: MutableList<WarehouseUnit> = mutableListOf()
+    var isAdmin: Boolean = true
 }

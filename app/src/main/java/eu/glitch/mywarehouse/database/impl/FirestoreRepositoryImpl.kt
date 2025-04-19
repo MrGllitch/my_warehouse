@@ -3,22 +3,66 @@ package eu.glitch.mywarehouse.database.impl
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import eu.glitch.mywarehouse.database.IRepository
 import eu.glitch.mywarehouse.model.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FirestoreRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore, private val auth: FirebaseAuth
 ) : IRepository {
 
-    private val dao by lazy {
-        firestore.collection("users").document(requireNotNull(auth.currentUser).uid)
+    var isInitialized = false
+
+    private lateinit var dao: DocumentReference
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            updateDaoForNewCompany()
+        }
     }
+    override suspend fun isInitialized(): Boolean {
+        if (!isInitialized) {
+            updateDaoForNewCompany()
+            isInitialized = true
+        }
+        return true
+    }
+
+    suspend fun updateDaoForNewCompany() {
+        val userOrCompanyId = getUserOrCompanyId()
+        dao = firestore.collection("users").document(userOrCompanyId)
+    }
+
+    private suspend fun getUserOrCompanyId(): String {
+        val currentUser = auth.currentUser
+        val userDocument = firestore.collection("users").document(currentUser?.uid ?: "")
+        val user = userDocument.get().await().toObject(User::class.java)
+
+        return user?.companyId ?: user?.id ?: currentUser?.uid
+        ?: throw IllegalStateException("User not authenticated or missing company ID")
+    }
+
+    suspend fun fetchCurrentUserRole() : String {
+        val currentUser = auth.currentUser
+        val userDocument = firestore.collection("users").document(currentUser?.uid ?: "")
+        val user = userDocument.get().await().toObject(User::class.java)
+
+        val role = user?.role ?: "admin"
+        return role
+    }
+
+
+
 
     override suspend fun getProducts(): List<Product> {
         return getItems("products", Product::class.java)

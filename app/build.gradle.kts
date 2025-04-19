@@ -11,9 +11,9 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        val versionMajor = 1
+        val versionMajor = 3
         val versionMinor = 1
-        val versionPatch = 4
+        val versionPatch = 2
         val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
         applicationId = "eu.glitch.mywarehouse"

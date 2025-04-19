@@ -44,6 +44,7 @@ class ProductListViewModel @Inject constructor(
     fun loadProducts() {
         viewModelScope.launch {
             data.products = repository.getProducts().toMutableList()
+            data.isAdmin = repository.isAdmin()
             filterProducts()
             _productListUIState.update {
                 ProductListUIState.ProductListChanged(data)
@@ -54,20 +55,12 @@ class ProductListViewModel @Inject constructor(
     fun loadTypes() {
         viewModelScope.launch {
             data.types = repository.getTypes().toMutableList()
-            _productListUIState.update {
-                ProductListUIState.ProductListChanged(data)
-            }
-
-
         }
     }
 
     fun loadChips() {
         viewModelScope.launch {
             data.chips = repository.getChips().toMutableList()
-            _productListUIState.update {
-                ProductListUIState.ProductListChanged(data)
-            }
         }
     }
 
