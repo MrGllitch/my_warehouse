@@ -1,11 +1,13 @@
 package eu.glitch.mywarehouse.database.impl
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 import eu.glitch.mywarehouse.database.IRepository
 import eu.glitch.mywarehouse.model.*
 import kotlinx.coroutines.CoroutineScope
@@ -13,12 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FirestoreRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore, private val auth: FirebaseAuth
+    private val firestore: FirebaseFirestore, private val auth: FirebaseAuth, private val storage: FirebaseStorage
 ) : IRepository {
 
     var isInitialized = false
@@ -39,17 +42,27 @@ class FirestoreRepositoryImpl @Inject constructor(
     }
 
     suspend fun updateDaoForNewCompany() {
-        val userOrCompanyId = getUserOrCompanyId()
-        dao = firestore.collection("users").document(userOrCompanyId)
+        val id = getUserOrCompanyId()
+            .takeIf { it.isNotBlank() }
+            ?: return
+
+        dao = firestore
+            .collection("users")
+            .document(id)
     }
 
     private suspend fun getUserOrCompanyId(): String {
-        val currentUser = auth.currentUser
-        val userDocument = firestore.collection("users").document(currentUser?.uid ?: "")
-        val user = userDocument.get().await().toObject(User::class.java)
-
-        return user?.companyId ?: user?.id ?: currentUser?.uid
-        ?: throw IllegalStateException("User not authenticated or missing company ID")
+        return auth.currentUser?.uid?.let { uid ->
+            val user = firestore
+                .collection("users")
+                .document(uid)
+                .get()
+                .await()
+                .toObject(User::class.java)
+            user?.companyId
+                ?: user?.id
+                ?: uid
+        } ?: ""
     }
 
     suspend fun fetchCurrentUserRole() : String {
@@ -145,6 +158,37 @@ class FirestoreRepositoryImpl @Inject constructor(
             crossRef?.chipId?.let { chipIds.add(it) }
         }
         return chipIds
+    }
+
+    override suspend fun updateProductPhoto(photoFile: File, imageName: String): String {
+        val storageRef = storage.reference.child("images/${(auth.currentUser)!!.uid}/").child(imageName)
+        val photoUri = Uri.fromFile(photoFile)
+
+        return try {
+            storageRef.putFile(photoUri).await()  // Upload photo to Firestore
+            val downloadUrl = storageRef.downloadUrl.await()  // Get the download URL
+            downloadUrl.toString()  // Return the URL
+        } catch (e: Exception) {
+            Log.e("uploadPhotoToFirestore", "Failed to upload image: ${e.message}")
+            throw e
+        }
+    }
+
+    override suspend fun saveImage(name: String, image: Uri) : String {
+        val storageRef = storage.reference.child("images/${(auth.currentUser)!!.uid}/").child(name)
+        storageRef.putFile(image).await()
+        return storageRef.downloadUrl.await().toString()
+    }
+
+    override suspend fun deleteImage(url: String) {
+        val regex = "\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{3}\\.jpg".toRegex()
+        val filename = regex.find(url)?.value
+
+        if (filename != null) {
+            storage.reference.child("images/${(auth.currentUser)!!.uid}/").child(filename).delete()
+        }
+
+
     }
 
     override suspend fun getRecords(): List<Record> {

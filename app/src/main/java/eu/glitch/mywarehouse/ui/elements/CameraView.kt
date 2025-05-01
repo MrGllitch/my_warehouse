@@ -63,16 +63,16 @@ fun CameraView(
 
 
     LaunchedEffect(lensFacing) {
-       // val cameraProvider = context.getCameraProvider()
-       // cameraProvider.unbindAll()
-       // cameraProvider.bindToLifecycle(
-       //     lifecycleOwner,
-       //     cameraSelector,
-       //     preview,
-       //     imageCapture
-       // )
+        val cameraProvider = context.getCameraProvider()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview,
+            imageCapture
+        )
 
-        preview.setSurfaceProvider(previewView.surfaceProvider)
+        preview.surfaceProvider = previewView.surfaceProvider
     }
 
     if (cameraPermissionState.status.isGranted) {
@@ -115,11 +115,11 @@ fun CameraView(
 
 }
 
-//private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-//    suspendCoroutine { continuation ->
-//        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
-//            cameraProvider.addListener({
-//                continuation.resume(cameraProvider.get())
-//            }, ContextCompat.getMainExecutor(this))
-//        }
-//    }
+private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
+    suspendCoroutine { continuation ->
+        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+            cameraProvider.addListener({
+                continuation.resume(cameraProvider.get())
+            }, ContextCompat.getMainExecutor(this))
+        }
+    }

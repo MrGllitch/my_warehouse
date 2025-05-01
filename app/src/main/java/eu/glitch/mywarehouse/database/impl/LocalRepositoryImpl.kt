@@ -1,5 +1,7 @@
 package eu.glitch.mywarehouse.database.impl
 
+import android.net.Uri
+import android.util.Log
 import eu.glitch.mywarehouse.database.daos.ChipDao
 import eu.glitch.mywarehouse.database.IRepository
 import eu.glitch.mywarehouse.database.daos.ProductDao
@@ -15,6 +17,7 @@ import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 
@@ -83,6 +86,23 @@ class LocalRepositoryImpl @Inject constructor(private val unitDao: UnitDao, priv
         return withContext(Dispatchers.IO) {
         productDao.getChipIdsForProduct(productId)
         }
+    }
+
+    override suspend fun updateProductPhoto(photoFile: File, imageName: String): String {
+        return try {
+            photoFile.createNewFile()
+            imageName
+        } catch (e: Exception) {
+            Log.e("savePhotoLocally", "Failed to save image locally: ${e.message}")
+            throw e
+        }
+    }
+
+    override suspend fun saveImage(name: String, image: Uri) : String{
+        return ""
+    }
+
+    override suspend fun deleteImage(url: String) {
     }
 
     override suspend fun getRecords(): List<Record> {

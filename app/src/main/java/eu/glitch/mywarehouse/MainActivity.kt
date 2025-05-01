@@ -2,6 +2,8 @@ package eu.glitch.mywarehouse
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen

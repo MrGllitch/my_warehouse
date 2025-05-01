@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -13,7 +14,7 @@ android {
     defaultConfig {
         val versionMajor = 3
         val versionMinor = 1
-        val versionPatch = 2
+        val versionPatch = 4
         val myVersionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         val myVersionName = "$versionMajor.$versionMinor.$versionPatch"
         applicationId = "eu.glitch.mywarehouse"
@@ -89,6 +90,9 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+    implementation(libs.guava)
+    implementation(libs.firebase.crashlytics)
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)

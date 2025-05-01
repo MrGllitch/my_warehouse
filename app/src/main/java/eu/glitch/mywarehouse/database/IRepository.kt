@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.database
 
+import android.net.Uri
 import eu.glitch.mywarehouse.model.Chip
 import eu.glitch.mywarehouse.model.Product
 import eu.glitch.mywarehouse.model.ProductChipCrossRef
@@ -8,6 +9,7 @@ import eu.glitch.mywarehouse.model.RecordListItem
 import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 interface IRepository {
     suspend fun isInitialized(): Boolean
@@ -21,6 +23,10 @@ interface IRepository {
     suspend fun deleteProductChipCrossRef(crossRef: ProductChipCrossRef)
     suspend fun updateProductWithChips(product: Product, newChipIds: List<String>)
     suspend fun getChipIdsForProduct(productId: String): List<String>
+    suspend fun updateProductPhoto(photoFile: File, imageName: String): String
+    //images
+    suspend fun saveImage(name: String, image: Uri) : String
+    suspend fun deleteImage(url: String)
     //records
     suspend fun getRecords(): List<Record>
     suspend fun insertRecord(record: Record)

@@ -1,10 +1,14 @@
 package eu.glitch.mywarehouse.ui.screens.product
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.ExifInterface
 import android.net.Uri
 import android.util.Log
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.internal.utils.ImageUtil.rotateBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -100,6 +105,11 @@ class AddEditProductViewModel @Inject constructor(
         Log.e("insert product", "insert: calling ${data.product.id}")
         viewModelScope.launch {
             if (data.product.id == "") {
+                if (data.imageUri != null && data.imageName.isNotEmpty()) {
+                    val image = repository.saveImage(data.imageName, data.imageUri!!)
+                    data.product.imageName = image
+                    removeLocalPhoto()
+                }
                 val id = repository.insertProduct(data.product)
                 withContext(Dispatchers.IO) {
                     data.productChips.forEach {
@@ -118,6 +128,26 @@ class AddEditProductViewModel @Inject constructor(
             }
         }
     }
+    private fun removeLocalPhoto() {
+        context.deleteFile(data.imageName)
+    }
+
+    override fun removePhoto() {
+        viewModelScope.launch {
+            if (data.imageName.startsWith("https")) {
+                repository.deleteImage(data.imageName)
+            } else {
+                context.deleteFile(data.imageName)
+            }
+        }
+
+        data.imageName = ""
+
+        _addEditProductUIState.update {
+            AddEditProductUIState.ProductStateChanged(data)
+        }
+
+    }
 
     override fun deleteProduct() {
         removePhoto()
@@ -134,11 +164,12 @@ class AddEditProductViewModel @Inject constructor(
         viewModelScope.launch {
             data.product = repository.getProduct(id)
 
+            Log.d("tag", "loadProduct: ${data.product}")
             data.productChips = repository.getChipIdsForProduct(data.product.id).toMutableList()
-        }
-        data.imageName = data.product.imageName.toString()
-        _addEditProductUIState.update {
-            AddEditProductUIState.ProductStateChanged(data)
+            data.imageName = data.product.imageName.toString()
+            _addEditProductUIState.update {
+                AddEditProductUIState.ProductStateChanged(data)
+            }
         }
     }
 
@@ -196,7 +227,11 @@ class AddEditProductViewModel @Inject constructor(
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    processImageOrientation(photoFile)
+                    compressImage(photoFile)
+
                     val savedUri = Uri.fromFile(photoFile)
+                    data.imageUri = savedUri
                     data.imageName = imageName
                     _addEditProductUIState.update {
                         AddEditProductUIState.ProductStateChanged(data)
@@ -204,15 +239,55 @@ class AddEditProductViewModel @Inject constructor(
                 }
             })
     }
+    private fun processImageOrientation(file: File) {
+        try {
+            // Read the EXIF metadata to check orientation
+            val exif = ExifInterface(file.path)
+            val rotation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL
+            )
+            val rotationInDegrees = exifToDegrees(rotation)
 
-    override fun removePhoto() {
-        context.deleteFile(data.imageName)
-        data.imageName = ""
+            // Rotate the image if needed
+            if (rotationInDegrees != 0) {
+                val bitmap = BitmapFactory.decodeFile(file.path)
+                val rotatedBitmap = rotateBitmap(bitmap, rotationInDegrees)
 
-        _addEditProductUIState.update {
-            AddEditProductUIState.ProductStateChanged(data)
+                // Save the rotated bitmap back to the file
+                FileOutputStream(file).use { out ->
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
+
+    private fun exifToDegrees(exifOrientation: Int): Int {
+        return when (exifOrientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+    }
+
+    private fun compressImage(photoFile: File) {
+        try {
+            val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+
+            val outputStream = FileOutputStream(photoFile)
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+
+            outputStream.flush()
+            outputStream.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
 
     override fun chipsChanged(id: String) {

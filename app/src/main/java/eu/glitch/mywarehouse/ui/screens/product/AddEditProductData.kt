@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.ui.screens.product
 
+import android.net.Uri
 import eu.glitch.mywarehouse.model.Chip
 import eu.glitch.mywarehouse.model.Product
 import eu.glitch.mywarehouse.model.Type
@@ -22,4 +23,5 @@ class AddEditProductData {
     var unitError: String? = null
 
     var imageName: String = ""
+    var imageUri: Uri? = null
 }

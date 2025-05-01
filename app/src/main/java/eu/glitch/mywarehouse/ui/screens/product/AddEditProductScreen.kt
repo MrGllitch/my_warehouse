@@ -140,9 +140,9 @@ fun AddEditProductScreen(navigationRouter: INavigationRouter, id: String?) {
             }
         },
             actions = {
-                IconButton(onClick = { navigationRouter.navigateToBarcodeScannerScreen() }) {
-                    GetIconByName(name = "icon_barcode", contentDescription = "")
-                }
+                //IconButton(onClick = { navigationRouter.navigateToBarcodeScannerScreen() }) {
+                //    GetIconByName(name = "icon_barcode", contentDescription = "")
+                //}
                 IconButton(onClick = { isCameraVisible = true }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.icon_photo_camera),
@@ -213,15 +213,27 @@ fun AddEditProductScreenContent(
                 )
             } else {
                 Box(modifier = Modifier.size(150.dp, 150.dp)) {
-                    Image(
-                        painter = rememberAsyncImagePainter(File("${context.filesDir}/${data.imageName}")),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(150.dp, 150.dp)
-                            .clip(RectangleShape)
+                    if (data.imageName.startsWith("https")){
+                        Image(
+                            painter = rememberAsyncImagePainter(model = data.imageName),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(150.dp, 150.dp)
+                                .clip(RectangleShape)
+                        )
+                    }else{
+                        Image(
+                            painter = rememberAsyncImagePainter(File("${context.filesDir}/${data.imageName}")),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(150.dp, 150.dp)
+                                .clip(RectangleShape)
 
-                    )
+                        )
+                    }
+
                     IconButton(
                         onClick = { actions.removePhoto() },
                         modifier = Modifier
@@ -233,6 +245,7 @@ fun AddEditProductScreenContent(
                         )
                     }
                 }
+
             }
 
 

@@ -1,5 +1,6 @@
 package eu.glitch.mywarehouse.database.impl
 
+import android.net.Uri
 import eu.glitch.mywarehouse.database.IRepository
 import eu.glitch.mywarehouse.model.Chip
 import eu.glitch.mywarehouse.model.Product
@@ -10,6 +11,7 @@ import eu.glitch.mywarehouse.model.Type
 import eu.glitch.mywarehouse.model.WarehouseUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.File
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val account: AccountServiceImpl, private val cloud: FirestoreRepositoryImpl, private val local: LocalRepositoryImpl) :
@@ -98,6 +100,18 @@ class RepositoryImpl @Inject constructor(private val account: AccountServiceImpl
 
     override suspend fun getChipIdsForProduct(productId: String): List<String> {
         return currentDataSource.getChipIdsForProduct(productId)
+    }
+
+    override suspend fun updateProductPhoto(photoFile: File, imageName: String): String {
+        return currentDataSource.updateProductPhoto(photoFile, imageName)
+    }
+
+    override suspend fun saveImage(name: String, image: Uri): String {
+        return currentDataSource.saveImage(name, image)
+    }
+
+    override suspend fun deleteImage(url: String) {
+        return currentDataSource.deleteImage(url)
     }
 
     override suspend fun getRecords(): List<Record> {
