@@ -255,14 +255,14 @@ class SettingsData {
 
 }
 
-class Invite {
-    var id = ""
-    var senderId = ""
-    var senderEmail = ""
-    var receiverEmail = ""
-    var role = ""
-    var status = ""
-}
+class Invite(
+    var id: String = "",
+    var senderId: String = "",
+    var senderEmail: String = "",
+    var receiverEmail: String = "",
+    var role: String = "",
+    var status: String = ""
+)
 
 interface SettingsActions {
     fun emailChanged(new: String)

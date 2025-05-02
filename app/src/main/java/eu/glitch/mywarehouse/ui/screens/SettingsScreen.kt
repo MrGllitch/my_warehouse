@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -119,7 +120,7 @@ fun SettingsScreen(navigationRouter: INavigationRouter) {
                     }
                 },
                     actions = {
-                        Button(onClick = { viewModel.logout() }) {
+                        Button(onClick = { viewModel.logout() }, modifier = Modifier.testTag("logout_button")) {
                             Text(text = "Logout")
                         }
                     })
@@ -151,7 +152,9 @@ fun SettingsScreenContent(
 
             // Email Text Field
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("email_text_field"),
                 label = { Text(text = "Email") },
                 value = data.email,
                 onValueChange = {
@@ -168,7 +171,9 @@ fun SettingsScreenContent(
                 value = data.password,
                 onValueChange = { actions.passwordChanged(it) },
                 label = { Text(text = "Password") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("password_text_field"),
                 singleLine = true,
                 placeholder = { Text("Password") },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -199,7 +204,8 @@ fun SettingsScreenContent(
                 text = if (!isLogin) "Already have an account? Click here to login" else "Don't have an account yet? Click here to register",
                 modifier = Modifier
                     .clickable { isLogin = !isLogin }
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 8.dp)
+                    .testTag("toggle_login_register"),
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
 
@@ -208,7 +214,9 @@ fun SettingsScreenContent(
             // Login/Register Button
             Button(
                 onClick = { if (isLogin) actions.login() else actions.register() },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("login_register_button"),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
             ) {
                 Text(text = if (isLogin) "Login" else "Register")
@@ -218,29 +226,39 @@ fun SettingsScreenContent(
             // Logged-in state
             Text(
                 text = "Logged in as ${data.user!!.email}",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("logged_in_as"),
                 style = androidx.compose.material3.MaterialTheme.typography.titleMedium
             )
 
             // Sync Button
             if (data.user!!.role != "employee"){
-            Button(
-                onClick = { actions.syncData() },
-                modifier = Modifier.fillMaxWidth(),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-            ) {
-                Text(text = data.syncStatus ?: "Sync Database")
-            }}
+                Button(
+                    onClick = { actions.syncData() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("sync_button"),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                ) {
+                    Text(text = data.syncStatus ?: "Sync Database")
+                }}
 
             if (data.user!!.companyId == null) {
                 // Invite User Section
-                Text(text = "Invite User", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = "Invite User",
+                    style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.testTag("invite_user_section")
+                )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         value = data.inviteEmail,
                         onValueChange = { actions.inviteEmailChanged(it) },
-                        modifier = Modifier.weight(3f),
+                        modifier = Modifier
+                            .weight(3f)
+                            .testTag("invite_email_field"),
                         placeholder = { Text(text = "user@email.com") },
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                     )
@@ -248,13 +266,19 @@ fun SettingsScreenContent(
                         roles = listOf("admin", "employee"),
                         selectedRole = data.inviteRole,
                         onRoleSelected = { actions.inviteRoleChanged(it) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("role_selector")
                     )
                 }
 
                 // Invite Error Handling
                 if (data.inviteEmailError != null) {
-                    Text(text = data.inviteEmailError!!, color = androidx.compose.ui.graphics.Color.Red)
+                    Text(
+                        text = data.inviteEmailError!!,
+                        color = androidx.compose.ui.graphics.Color.Red,
+                        modifier = Modifier.testTag("invite_error_message")
+                    )
                 }
 
                 // Invite Button
@@ -262,69 +286,84 @@ fun SettingsScreenContent(
                     onClick = { actions.invite() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(top = 8.dp)
+                        .testTag("invite_button"),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                 ) {
                     Text(text = "Invite")
                 }
 
                 if (data.users?.size != 0){
-                // Users List
-                LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                    data.users?.forEach { user ->
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(text = user.email, modifier = Modifier.weight(1f))
-                                Button(
-                                    onClick = { actions.removeEmployee(user.email) },
-                                    modifier = Modifier.padding(start = 8.dp)
-                                ) {
-                                    Text(text = "Remove")
-                                }
-                            }
-                        }
-                    }
-                }}else{
-
-                // Invitations List
-                if (data.invitations?.isEmpty() == true) {
-                    Text(text = "No invitations", modifier = Modifier.padding(top = 16.dp))
-                } else {
+                    // Users List
                     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                        data.invitations?.forEach {
+                        data.users?.forEach { user ->
                             item {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(text = "${it.senderEmail} - ${it.role}", modifier = Modifier.weight(1f))
+                                    Text(text = user.email, modifier = Modifier.weight(1f))
                                     Button(
-                                        onClick = { actions.acceptInvite(it.id) },
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    ) {
-                                        Text(text = "Accept")
-                                    }
-                                    Button(
-                                        onClick = { actions.removeInvite(it.id) },
-                                        modifier = Modifier.padding(start = 8.dp)
+                                        onClick = { actions.removeEmployee(user.email) },
+                                        modifier = Modifier
+                                            .padding(start = 8.dp)
+                                            .testTag("remove_employee_button")
                                     ) {
                                         Text(text = "Remove")
                                     }
                                 }
                             }
                         }
+                    }}else{
+
+                    // Invitations List
+                    if (data.invitations?.isEmpty() == true) {
+                        Text(
+                            text = "No invitations",
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    } else {
+                        LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+                            data.invitations?.forEach {
+                                item {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(text = "${it.senderEmail} - ${it.role}", modifier = Modifier.weight(1f))
+                                        Button(
+                                            onClick = { actions.acceptInvite(it.id) },
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .testTag("accept_invite_button")
+                                        ) {
+                                            Text(text = "Accept")
+                                        }
+                                        Button(
+                                            onClick = { actions.removeInvite(it.id) },
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .testTag("remove_invite_button")
+                                        ) {
+                                            Text(text = "Remove")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
                 }
             } else {
                 // Under Company
-                Text(text = "You are under: ${data.senderEmail}")
+                Text(
+                    text = "You are under: ${data.senderEmail}",
+                    modifier = Modifier.testTag("company_under_text")
+                )
                 Button(
                     onClick = { actions.leaveCompany() },
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .testTag("leave_company_button"),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                 ) {
                     Text(text = "Leave Company")
@@ -333,6 +372,7 @@ fun SettingsScreenContent(
         }
     }
 }
+
 
 @Composable
 fun RoleSelector(

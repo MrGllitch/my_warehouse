@@ -23,7 +23,7 @@ android {
         versionCode = myVersionCode
         versionName = myVersionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "eu.glitch.mywarehouse.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -54,7 +54,7 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}"
         }
     }
 }
@@ -93,6 +93,20 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.guava)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.mockk)
+    implementation(libs.kotlinx.coroutines.test)
+    implementation(libs.mockito.kotlin)
+    implementation(libs.mockito.android)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.compiler)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
     kapt(libs.moshi.kapt)
 
     testImplementation(libs.junit)
